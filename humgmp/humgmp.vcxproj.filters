@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="helper">
+      <UniqueIdentifier>{bdb89393-35f8-40f1-ac2e-73262416974d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{7e826354-0935-4bf4-847b-6952cc88c080}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ns-3\src\humgmp\helper\hu11s\hu11s-installer.cc">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\helper\meshnet-helper.cc">
+      <Filter>helper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\meshnet-information-element-vector.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\meshnet-l2-routing-protocol.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\meshnet-point-device.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\meshnet-wifi-beacon.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\meshnet-wifi-interface-mac.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\hu11s-airtime-metric.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\hu11s-mac-header.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\huper-link.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\huper-link-frame.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\huper-management-protocol.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\huper-management-protocol-mac.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-beacon-timing.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-configuration.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-hupering-protocol.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-huper-management.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-id.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-metric-report.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-perr.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-prep.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-preq.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-rann.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\mgmp-protocol.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\mgmp-protocol-mac.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\mgmp-rtable.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ns-3\src\humgmp\model\hu11s\mgmp-tag.cc">
+      <Filter>model</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ns-3\src\humgmp\helper\hu11s\hu11s-installer.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\helper\meshnet-helper.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\helper\meshnet-stack-installer.h">
+      <Filter>helper</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-information-element.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-information-element-vector.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-l2-routing-protocol.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-point-device.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-wifi-beacon.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-wifi-interface-mac.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\meshnet-wifi-interface-mac-plugin.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\hu11s.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\hu11s-airtime-metric.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\hu11s-mac-header.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\huper-link.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\huper-link-frame.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\huper-management-protocol.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\huper-management-protocol-mac.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-beacon-timing.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-configuration.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-hupering-protocol.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-huper-management.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-id.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-metric-report.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-perr.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-prep.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-preq.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\ie-hu11s-rann.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\mgmp-protocol.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\mgmp-protocol-mac.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\mgmp-rtable.h">
+      <Filter>model</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ns-3\src\humgmp\model\hu11s\mgmp-tag.h">
+      <Filter>model</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
