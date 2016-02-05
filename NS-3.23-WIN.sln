@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "core", "core\core.vcxproj", "{B7820E24-D8E4-463F-BF3E-204B9D8114B4}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -37,6 +37,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "main", "main\main.vcxproj",
 		{FE1A1789-88A3-4177-A3B5-C574DFAFE215} = {FE1A1789-88A3-4177-A3B5-C574DFAFE215}
 		{CC81AF8F-057F-4E7A-9640-F7CEEDD1B273} = {CC81AF8F-057F-4E7A-9640-F7CEEDD1B273}
 		{812DBF97-BFB6-46F1-ABB1-DEBE81D75DEA} = {812DBF97-BFB6-46F1-ABB1-DEBE81D75DEA}
+		{314864A8-1E3B-4E09-836D-08595E7041C3} = {314864A8-1E3B-4E09-836D-08595E7041C3}
 		{9D0CCBA8-1101-4147-B9EF-601EBFD74B85} = {9D0CCBA8-1101-4147-B9EF-601EBFD74B85}
 		{F2C240AC-B376-4E0B-9EDD-BB50F2BBE75B} = {F2C240AC-B376-4E0B-9EDD-BB50F2BBE75B}
 		{03D84DB1-22AB-46D0-974A-CDCD58365D5F} = {03D84DB1-22AB-46D0-974A-CDCD58365D5F}
@@ -311,6 +312,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "相关说明", "相关说�
 		相关说明\路由信息更新和路径补充生成.vsdx = 相关说明\路由信息更新和路径补充生成.vsdx
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "humgmp", "humgmp\humgmp.vcxproj", "{314864A8-1E3B-4E09-836D-08595E7041C3}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B7820E24-D8E4-463F-BF3E-204B9D8114B4} = {B7820E24-D8E4-463F-BF3E-204B9D8114B4}
+		{FCAE684C-D6B0-4D31-8836-1D0875A98D65} = {FCAE684C-D6B0-4D31-8836-1D0875A98D65}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -493,6 +500,10 @@ Global
 		{24608AD7-10E4-4E5F-BEE2-115AB6F2D65E}.Debug|Win32.Build.0 = Debug|Win32
 		{24608AD7-10E4-4E5F-BEE2-115AB6F2D65E}.Release|Win32.ActiveCfg = Release|Win32
 		{24608AD7-10E4-4E5F-BEE2-115AB6F2D65E}.Release|Win32.Build.0 = Release|Win32
+		{314864A8-1E3B-4E09-836D-08595E7041C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{314864A8-1E3B-4E09-836D-08595E7041C3}.Debug|Win32.Build.0 = Debug|Win32
+		{314864A8-1E3B-4E09-836D-08595E7041C3}.Release|Win32.ActiveCfg = Release|Win32
+		{314864A8-1E3B-4E09-836D-08595E7041C3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
