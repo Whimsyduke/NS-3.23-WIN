@@ -312,7 +312,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "相关说明", "相关说�
 		相关说明\路由信息更新和路径补充生成.vsdx = 相关说明\路由信息更新和路径补充生成.vsdx
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "humgmp", "humgmp\humgmp.vcxproj", "{314864A8-1E3B-4E09-836D-08595E7041C3}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "meshnet", "meshnet\meshnet.vcxproj", "{314864A8-1E3B-4E09-836D-08595E7041C3}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B7820E24-D8E4-463F-BF3E-204B9D8114B4} = {B7820E24-D8E4-463F-BF3E-204B9D8114B4}
 		{FCAE684C-D6B0-4D31-8836-1D0875A98D65} = {FCAE684C-D6B0-4D31-8836-1D0875A98D65}
