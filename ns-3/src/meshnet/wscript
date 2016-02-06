@@ -1,0 +1,74 @@
+## -*- Mode: python; py-indent-offset: 4; indent-tabs-mode: nil; coding: utf-8; -*-
+
+def build(bld):
+    obj = bld.create_ns3_module('meshnet', ['internet', 'wifi', 'applications'])
+
+    obj.source = [
+        'model/meshnet-information-element-vector.cc',
+        'model/meshnet-point-device.cc',
+        'model/meshnet-l2-routing-protocol.cc',
+        'model/meshnet-wifi-beacon.cc',
+        'model/meshnet-wifi-interface-mac.cc',
+        'model/hu11s/ie-hu11s-beacon-timing.cc',
+        'model/hu11s/ie-hu11s-configuration.cc',
+        'model/hu11s/ie-hu11s-id.cc',
+        'model/hu11s/ie-hu11s-huper-management.cc',
+        'model/hu11s/ie-hu11s-preq.cc',
+        'model/hu11s/ie-hu11s-prep.cc',
+        'model/hu11s/ie-hu11s-perr.cc',
+        'model/hu11s/ie-hu11s-rann.cc',
+        'model/hu11s/ie-hu11s-hupering-protocol.cc',
+        'model/hu11s/ie-hu11s-metric-report.cc',
+        'model/hu11s/hu11s-mac-header.cc',
+        'model/hu11s/huper-link-frame.cc',
+        'model/hu11s/huper-link.cc',
+        'model/hu11s/huper-management-protocol-mac.cc',
+        'model/hu11s/huper-management-protocol.cc',
+        'model/hu11s/mgmp-tag.cc',
+        'model/hu11s/mgmp-rtable.cc',
+        'model/hu11s/mgmp-protocol-mac.cc',
+        'model/hu11s/mgmp-protocol.cc',
+        'model/hu11s/hu11s-airtime-metric.cc',
+        'helper/meshnet-helper.cc',
+        'helper/hu11s/hu11s-installer.cc',
+        ]
+
+    obj_test = bld.create_ns3_module_test_library('meshnet')
+    obj_test.source = [
+        ]
+
+    headers = bld(features='ns3header')
+    headers.module = 'meshnet'
+    headers.source = [
+        'model/meshnet-information-element.h',
+        'model/meshnet-information-element-vector.h',
+        'model/meshnet-point-device.h',
+        'model/meshnet-l2-routing-protocol.h',
+        'model/meshnet-wifi-beacon.h',
+        'model/meshnet-wifi-interface-mac.h',
+        'model/meshnet-wifi-interface-mac-plugin.h',
+        'model/hu11s/mgmp-protocol.h',
+        'model/hu11s/huper-management-protocol.h',
+        'model/hu11s/ie-hu11s-beacon-timing.h',
+        'model/hu11s/ie-hu11s-configuration.h',
+        'model/hu11s/ie-hu11s-huper-management.h',
+        'model/hu11s/ie-hu11s-id.h',
+        'model/hu11s/huper-link.h',
+        'model/hu11s/hu11s-mac-header.h',
+        'model/hu11s/huper-link-frame.h',
+        'model/hu11s/mgmp-rtable.h',
+        'model/hu11s/ie-hu11s-hupering-protocol.h',
+        'model/hu11s/ie-hu11s-metric-report.h',
+        'model/hu11s/ie-hu11s-perr.h',
+        'model/hu11s/ie-hu11s-prep.h',
+        'model/hu11s/ie-hu11s-preq.h',
+        'model/hu11s/ie-hu11s-rann.h',
+        'helper/meshnet-helper.h',
+        'helper/meshnet-stack-installer.h',
+        'helper/hu11s/hu11s-installer.h',
+        ]
+
+    if bld.env['ENABLE_EXAMPLES']:
+        bld.recurse('examples')
+
+    bld.ns3_python_bindings()

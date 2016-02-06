@@ -19,7 +19,7 @@
  *          Aleksey Kovalenko <kovalenko@iitp.ru>
  */
 
-#ifndef PEER_LINK_H
+#ifndef HUPER_LINK_H
 #define HUPER_LINK_H
 
 #include "ns3/nstime.h"

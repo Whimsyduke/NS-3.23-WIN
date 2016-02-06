@@ -23,7 +23,7 @@
 //2：多路径测试PMTRP
 //3：多路径测试
 //4：多路径测试路径截图
-#define MESH_TEST_ROUTE_MODE 2
+#define MESH_TEST_ROUTE_MODE 2 
 
 //1：多网关测试
 #if MESH_TEST_ROUTE_MODE == 1

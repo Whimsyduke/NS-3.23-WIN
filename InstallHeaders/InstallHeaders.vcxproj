@@ -159,11 +159,11 @@ copy "$(SolutionDir)ns-3\src\pmtmgmp\helper\*.h"  "$(SolutionDir)headers\ns3"
 copy "$(SolutionDir)ns-3\src\pmtmgmp\model\my11s\*.h"  "$(SolutionDir)headers\ns3"
 copy "$(SolutionDir)ns-3\src\pmtmgmp\helper\my11s\*.h"  "$(SolutionDir)headers\ns3"
 
-copy "$(SolutionDir)ns-3\src\humgmp\model\*.h"  "$(SolutionDir)headers\ns3"
-copy "$(SolutionDir)ns-3\src\humgmp\helper\*.h"  "$(SolutionDir)headers\ns3"
+copy "$(SolutionDir)ns-3\src\meshnet\model\*.h"  "$(SolutionDir)headers\ns3"
+copy "$(SolutionDir)ns-3\src\meshnet\helper\*.h"  "$(SolutionDir)headers\ns3"
 
-copy "$(SolutionDir)ns-3\src\humgmp\model\hu11s\*.h"  "$(SolutionDir)headers\ns3"
-copy "$(SolutionDir)ns-3\src\humgmp\helper\hu11s\*.h"  "$(SolutionDir)headers\ns3"
+copy "$(SolutionDir)ns-3\src\meshnet\model\hu11s\*.h"  "$(SolutionDir)headers\ns3"
+copy "$(SolutionDir)ns-3\src\meshnet\helper\hu11s\*.h"  "$(SolutionDir)headers\ns3"
 
 copy "$(SolutionDir)ns-3\src\wifi\model\*.h"  "$(SolutionDir)headers\ns3"
 copy "$(SolutionDir)ns-3\src\wifi\helper\*.h"  "$(SolutionDir)headers\ns3"
