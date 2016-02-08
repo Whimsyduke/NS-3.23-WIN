@@ -43,7 +43,7 @@ namespace ns3 {
 	/* begin of open80211s-compatible IDs */
 #define IE11S_MESHNET_CONFIGURATION               ((WifiInformationElementId)113)
 #define IE11S_MESHNET_ID                          ((WifiInformationElementId)114)
-#define IE11S_MGMP_HUPERING_MANAGEMENT               ((WifiInformationElementId)117)
+#define IE11S_HUPERING_MANAGEMENT               ((WifiInformationElementId)117)
 	/* end of open80211s-compatible IDs */
 #define IE11S_RANN                             ((WifiInformationElementId)126)
 	/* begin of open80211s-compatible IDs */
@@ -51,20 +51,7 @@ namespace ns3 {
 #define IE11S_PREP                             ((WifiInformationElementId)131)
 #define IE11S_PERR                             ((WifiInformationElementId)132)
 	/* end of open80211s-compatible IDs */
-#ifndef MGMP_UNUSED_MY_CODE
-#define IE11S_SECREQ                             ((WifiInformationElementId)255)
-#define IE11S_SECREP                             ((WifiInformationElementId)254)
-#define IE11S_SECACK                             ((WifiInformationElementId)253)
-#define IE11S_PGER                               ((WifiInformationElementId)252)
-#define IE11S_PGEN                               ((WifiInformationElementId)251)
-#define IE11S_PUPD                               ((WifiInformationElementId)250)
-#define IE11S_PUPGQ                               ((WifiInformationElementId)249)
-#endif
-#define IE11S_MESHNET_MGMP_HUPERING_PROTOCOL_VERSION    ((WifiInformationElementId)74)
-#ifndef HUMGMP_UNUSED_MY_CODE
-#define IE11S_HUPERING_MANAGEMENT               ((WifiInformationElementId)248)
-#define IE11S_MESHNET_HUPERING_PROTOCOL_VERSION    ((WifiInformationElementId)247)
-#endif
+#define IE11S_MESHNET_HUPERING_PROTOCOL_VERSION    ((WifiInformationElementId)74)
 }
 
 #endif /* MESHNET_INFORMATION_ELEMENT_H */

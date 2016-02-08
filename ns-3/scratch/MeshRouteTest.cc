@@ -23,12 +23,12 @@
 //2：多路径测试PMTRP
 //3：多路径测试
 //4：多路径测试路径截图
-#define MESH_TEST_ROUTE_MODE 2 
+#define MESH_TEST_ROUTE_MODE 1
 
 //1：多网关测试
 #if MESH_TEST_ROUTE_MODE == 1
 //输出到文件
-//#define OUT_TO_FILE
+#define OUT_TO_FILE
 //无应用层模式
 //#define NO_APPLICATION
 //测试模式
@@ -242,6 +242,7 @@
 #include "ns3/network-module.h"
 #include "ns3/wifi-module.h"
 #include "ns3/pmtmgmp-module.h"
+#include "ns3/meshnet-module.h"
 #include "ns3/mesh-module.h"
 #include "ns3/mobility-module.h"
 #include "ns3/applications-module.h"
@@ -275,6 +276,7 @@ public:
 		DOT11S_HWMP,// HWMP路由协议
 		DOT11S_FLAME,
 		MY11S_PMTMGMP,// PMTMGMP路由协议
+		HU11S_MGMP,// PMTMGMP路由协议
 	};
 
 	enum NodeAreaType// 节点区域形状类型
@@ -369,6 +371,7 @@ private:
 	NetDeviceContainer l_NetDevices;
 	MeshHelper l_Mesh;
 	WmnHelper l_Pmtmgmp;
+	MeshnetHelper l_Humgmp;
 	// 接口地址:
 	Ipv4InterfaceContainer l_Interfaces;
 	// 流量统计
@@ -393,6 +396,7 @@ MeshRouteClass::MeshRouteClass() :
 	// 链路层及网络层协议设置
 	l_Mesh = MeshHelper::Default();
 	l_Pmtmgmp = WmnHelper::Default();
+	l_Humgmp = MeshnetHelper::Default();
 }
 
 // 设置参数
@@ -428,8 +432,6 @@ void MeshRouteClass::SimulatorSetting()
 		string l_AttributePath_PeerLink;// Peer Link
 		string l_AttributePath_PeerManagementProtocol;// Peer Management Protocol
 		string l_AttributePath_RouteProtocol;// Route Protocol
-		string l_AttributePath_RouteProtocolPart;// 部分名称差异
-
 												 //路由协议类型
 		switch (m_ProtocolType)
 		{
@@ -437,14 +439,17 @@ void MeshRouteClass::SimulatorSetting()
 			l_AttributePath_PeerLink = "ns3::dot11s::PeerLink::";
 			l_AttributePath_PeerManagementProtocol = "ns3::dot11s::PeerManagementProtocol::";
 			l_AttributePath_RouteProtocol = "ns3::dot11s::HwmpProtocol::";
-			l_AttributePath_RouteProtocolPart = "Dot11MeshHWMP";
 			break;
 		case MeshRouteClass::MY11S_PMTMGMP:
 			l_AttributePath_PeerLink = "ns3::my11s::PmtmgmpPeerLink::";
 			l_AttributePath_PeerManagementProtocol = "ns3::my11s::PmtmgmpPeerManagementProtocol::";
 			l_AttributePath_RouteProtocol = "ns3::my11s::PmtmgmpProtocol::";
-			l_AttributePath_RouteProtocolPart = "My11WmnPMTMGMP";
 			Config::SetDefault("ns3::my11s::PmtmgmpRouteTree::MSECPnumForMTERP", UintegerValue(3));
+			break;
+		case MeshRouteClass::HU11S_MGMP:
+			l_AttributePath_PeerLink = "ns3::hu11s::HuperLink::";
+			l_AttributePath_PeerManagementProtocol = "ns3::hu11s::HuperManagementProtocol::";
+			l_AttributePath_RouteProtocol = "ns3::hu11s::MgmpProtocol::";
 			break;
 		default:
 			break;
@@ -538,19 +543,21 @@ void MeshRouteClass::CreateNodes()
 		break;
 	case MeshRouteClass::MY11S_PMTMGMP:
 		l_Pmtmgmp.SetStandard(m_WifiPhyStandard);
-		if (!Mac48Address(m_Root.c_str()).IsBroadcast())
-		{
-			l_Pmtmgmp.SetStackInstaller("ns3::My11sStack", "Root", Mac48AddressValue(Mac48Address(m_Root.c_str())));
-		}
-		else
-		{
-			l_Pmtmgmp.SetStackInstaller("ns3::My11sStack");
-		}
+		l_Pmtmgmp.SetStackInstaller("ns3::My11sStack");
 		l_Pmtmgmp.SetMacType("RandomStart", TimeValue(Seconds(m_RandomStart)));
 		l_Pmtmgmp.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode", StringValue("ErpOfdmRate9Mbps"), "RtsCtsThreshold", UintegerValue(2500));
 		l_Pmtmgmp.SetNumberOfInterfaces(m_NumIface);
 		l_Pmtmgmp.SetSpreadInterfaceChannels(WmnHelper::ZERO_CHANNEL);
 		l_NetDevices = l_Pmtmgmp.Install(wifiPhy, l_Nodes);
+		break;
+	case MeshRouteClass::HU11S_MGMP:
+		l_Humgmp.SetStandard(m_WifiPhyStandard);
+		l_Humgmp.SetStackInstaller("ns3::Hu11sStack");
+		l_Humgmp.SetMacType("RandomStart", TimeValue(Seconds(m_RandomStart)));
+		l_Humgmp.SetRemoteStationManager("ns3::ConstantRateWifiManager", "DataMode", StringValue("ErpOfdmRate9Mbps"), "RtsCtsThreshold", UintegerValue(2500));
+		l_Humgmp.SetNumberOfInterfaces(m_NumIface);
+		l_Humgmp.SetSpreadInterfaceChannels(MeshnetHelper::ZERO_CHANNEL);
+		l_NetDevices = l_Humgmp.Install(wifiPhy, l_Nodes);
 		break;
 	default:
 		break;
@@ -677,9 +684,23 @@ void MeshRouteClass::SetOnOffHelperApplicationRemote(Ptr<OnOffApplication> app, 
 		}
 		if (gotPath == false) NS_FATAL_ERROR("Can not got Path at node " << nodeIndex << "!");
 	}
-	else
+	else if (m_ProtocolType == HU11S_MGMP)
 	{
-		dstIndex = l_MPP[0];
+		Ptr<UniformRandomVariable> randIndex = CreateObject<UniformRandomVariable>();
+		randIndex->SetAttribute("Min", DoubleValue(0));
+		randIndex->SetAttribute("Max", DoubleValue(1));
+		if (randIndex->GetValue() > 0.5)
+		{
+			dstIndex = nodeIndex + m_Size;
+		}
+		else
+		{
+			dstIndex = nodeIndex - m_Size;
+		}
+		if (dstIndex >= l_NodeNum)
+		{
+			dstIndex -= m_Size * 6;
+		}
 	}
 	AddressValue remoteAddress(InetSocketAddress(InetSocketAddress(l_Interfaces.GetAddress(dstIndex), 49000)));
 	app->SetAttribute("Remote", remoteAddress);
@@ -705,6 +726,10 @@ void MeshRouteClass::InstallOnOffHelperApplication(int srcIndex, double start, d
 	if (m_ProtocolType == MY11S_PMTMGMP)
 	{
 		DynamicCast<my11s::PmtmgmpProtocol>(DynamicCast<WmnPointDevice>(l_Nodes.Get(srcIndex)->GetDevice(0))->GetRoutingProtocol())->SetNodeType(my11s::PmtmgmpProtocol::Mesh_Access_Point);
+	}
+	else if (m_ProtocolType == HU11S_MGMP)
+	{
+		DynamicCast<hu11s::MgmpProtocol>(DynamicCast<MeshnetPointDevice>(l_Nodes.Get(srcIndex)->GetDevice(0))->GetRoutingProtocol())->SetRoot();
 	}
 	Simulator::Schedule(Seconds(MIN_APPLICATION_TIME + start), &MeshRouteClass::SetOnOffHelperApplicationRemote, this, DynamicCast<OnOffApplication>(sourceApps.Get(0)), srcIndex);
 }
@@ -782,7 +807,7 @@ void MeshRouteClass::InstallApplicationRandom()
 				for (int x = start; x < m_Size; x += m_ApplicationStep)
 				{
 					int i = y * m_Size + x;
-					if (i > (l_NodeNum - 1) / 2)
+					if (i >(l_NodeNum - 1) / 2)
 					{
 						end = true;
 						break;
@@ -897,27 +922,17 @@ void MeshRouteClass::InstallApplicationRandom()
 						if (n % 2 == 0)
 						{
 							InstallOnOffHelperApplication(s + i, n, m_TotalTime);
-							if (m_ProtocolType == MY11S_PMTMGMP)
-							{
-								InstallPacketSinkHelperApplication(s + r * 3 + i, 49000 + n, n, m_TotalTime);
-							}
+							InstallPacketSinkHelperApplication(s + r * 3 + i, 49000 + n, n, m_TotalTime);
 						}
 						else
 						{
 							InstallOnOffHelperApplication(s + r * 3 + i, n, m_TotalTime);
-							if (m_ProtocolType == MY11S_PMTMGMP)
-							{
-								InstallPacketSinkHelperApplication(s + i, 49000 + n, n, m_TotalTime);
-							}
+							InstallPacketSinkHelperApplication(s + i, 49000 + n, n, m_TotalTime);
 						}
 						n++;
 					}
 				}
 			}
-		}
-		if (m_ProtocolType != MY11S_PMTMGMP)
-		{
-			InstallPacketSinkHelperApplication(0, 49001, 1, m_TotalTime);
 		}
 		break;
 		default:
@@ -1046,9 +1061,9 @@ void MeshRouteClass::FlowMonitorReport()
 
 	// 输出全部结点数据到文件
 #ifndef TEST_SIDE_ALL
-	remove("1_HWMP_PDF.txt");
-	remove("1_HWMP_Delay.txt");
-	remove("1_HWMP_Throu.txt");
+	std::remove("1_HWMP_PDF.txt");
+	std::remove("1_HWMP_Delay.txt");
+	std::remove("1_HWMP_Throu.txt");
 #endif
 	std::ostringstream os;
 	os << "1_HWMP_PDF.txt";
@@ -1140,7 +1155,7 @@ void MeshRouteClass::CallBack_ApplicationTX(string context, Ptr<const Packet> pa
 }
 void MeshRouteClass::CallBack_ApplicationRX(string path, Ptr<const Packet> packet, const Address &address)
 {
-	NS_LOG_INFO("Receive Packet at " <<  address << ", Size:" << packet->GetSize() << std::endl);
+	NS_LOG_INFO("Receive Packet at " << address << ", Size:" << packet->GetSize() << std::endl);
 }
 #endif
 
@@ -1160,6 +1175,9 @@ void MeshRouteClass::Report()
 	case MeshRouteClass::MY11S_PMTMGMP:
 		typeName = "MY11S_PMTMGMP";
 		break;
+	case MeshRouteClass::HU11S_MGMP:
+		typeName = "HU11S_MGMP";
+		break;
 	default:
 		break;
 	}
@@ -1174,7 +1192,7 @@ void MeshRouteClass::Report()
 		ss >> s;
 		s = typeName + "-mp-report-" + s + ".xml";
 #ifndef TEST_SIDE_ALL
-		remove(s.c_str());
+		std::remove(s.c_str());
 #endif
 		os << s;
 		std::ofstream of;
@@ -1200,6 +1218,8 @@ void MeshRouteClass::Report()
 			break;
 		case MeshRouteClass::MY11S_PMTMGMP:
 			l_Pmtmgmp.Report(*i, of);
+		case MeshRouteClass::HU11S_MGMP:
+			l_Humgmp.Report(*i, of);
 			break;
 		default:
 			break;
@@ -1223,6 +1243,9 @@ int main(int argc, char *argv[])
 #endif
 #endif
 
+	LogComponentEnable("MgmpProtocol", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
+
+#ifndef TEST_MULTIGATE
 #ifndef TEST_SIDE_ALL
 	//LogComponentEnableAll((LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_ALL));
 
@@ -1545,5 +1568,19 @@ int main(int argc, char *argv[])
 		test.Run();
 #endif
 	}
+#else		
+	NS_LOG_INFO("=============================");
+	NS_LOG_INFO("PROTOCOL :HU11S   SIZE :" << TEST_SET_SIZE);
+	NS_LOG_INFO("=============================\n");
+	MeshRouteClass mesh;
+	mesh.SetMeshRouteClass(MeshRouteClass::HU11S_MGMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
+	mesh.Run();
+	NS_LOG_INFO("=============================");
+	NS_LOG_INFO("PROTOCOL :MY11S_PMTMGMP   SIZE :" << TEST_SET_SIZE);
+	NS_LOG_INFO("=============================\n");
+	MeshRouteClass pmtmgmp;
+	pmtmgmp.SetMeshRouteClass(MeshRouteClass::MY11S_PMTMGMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
+	pmtmgmp.Run();
+#endif						
 	return 0;
 }
