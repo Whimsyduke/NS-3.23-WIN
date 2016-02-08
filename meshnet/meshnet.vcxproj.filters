@@ -1,11 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="model">
-      <UniqueIdentifier>{01cfa6ff-1ec5-4997-a30f-082ce548ff7d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="helper">
-      <UniqueIdentifier>{52508811-9ec7-4ab0-b374-620654efd539}</UniqueIdentifier>
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="model">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -185,5 +187,6 @@
     <ClInclude Include="..\ns-3\src\meshnet\model\hu11s\mgmp-tag.h">
       <Filter>model</Filter>
     </ClInclude>
+    <ClInclude Include="..\others\ns3\meshnet-module.h" />
   </ItemGroup>
 </Project>

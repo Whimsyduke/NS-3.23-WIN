@@ -55,7 +55,7 @@ namespace ns3 {
 		case IE11S_LINK_METRIC_REPORT:
 			newElement = Create<hu11s::IeLinkMetricReport>();
 			break;
-		case IE11S_MGMP_HUPERING_MANAGEMENT:
+		case IE11S_HUPERING_MANAGEMENT:
 			newElement = Create<hu11s::IeHuperManagement>();
 			break;
 		case IE11S_BEACON_TIMING:
@@ -73,7 +73,7 @@ namespace ns3 {
 		case IE11S_PERR:
 			newElement = Create<hu11s::IePerr>();
 			break;
-		case IE11S_MESHNET_MGMP_HUPERING_PROTOCOL_VERSION:
+		case IE11S_MESHNET_HUPERING_PROTOCOL_VERSION:
 			newElement = Create<hu11s::IeHuperingProtocol>();
 			break;
 		default:
