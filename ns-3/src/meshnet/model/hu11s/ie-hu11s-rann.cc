@@ -24,157 +24,199 @@
 #include "ns3/packet.h"
 
 namespace ns3 {
-namespace hu11s {
+	namespace hu11s {
 
-IeRann::~IeRann ()
-{
-}
-IeRann::IeRann () :
-  m_flags (0), m_hopcount (0), m_ttl (0), m_originatorAddress (Mac48Address::GetBroadcast ()),
-  m_destSeqNumber (0), m_metric (0)
-{
-}
-WifiInformationElementId
-IeRann::ElementId () const
-{
-  return IE11S_RANN;
-}
+		IeRann::~IeRann()
+		{
+		}
+		IeRann::IeRann() :
+			m_flags(0), m_hopcount(0), m_ttl(0), m_originatorAddress(Mac48Address::GetBroadcast()),
+			m_destSeqNumber(0), m_metric(0)
+		{
+		}
+		WifiInformationElementId
+			IeRann::ElementId() const
+		{
+			return IE11S_RANN;
+		}
 
-void
-IeRann::SetFlags (uint8_t flags)
-{
-  m_flags = flags;
-}
-void
-IeRann::SetHopcount (uint8_t hopcount)
-{
-  m_hopcount = hopcount;
-}
-void
-IeRann::SetTTL (uint8_t ttl)
-{
-  m_ttl = ttl;
-}
-void
-IeRann::SetDestSeqNumber (uint32_t dest_seq_number)
-{
-  m_destSeqNumber = dest_seq_number;
-}
-void
-IeRann::SetMetric (uint32_t metric)
-{
-  m_metric = metric;
-}
-void
-IeRann::SetOriginatorAddress (Mac48Address originator_address)
-{
-  m_originatorAddress = originator_address;
-}
+		void
+			IeRann::SetFlags(uint8_t flags)
+		{
+			m_flags = flags;
+		}
+		void
+			IeRann::SetHopcount(uint8_t hopcount)
+		{
+			m_hopcount = hopcount;
+		}
+		void
+			IeRann::SetTTL(uint8_t ttl)
+		{
+			m_ttl = ttl;
+		}
+		void
+			IeRann::SetDestSeqNumber(uint32_t dest_seq_number)
+		{
+			m_destSeqNumber = dest_seq_number;
+		}
+		void
+			IeRann::SetMetric(uint32_t metric)
+		{
+			m_metric = metric;
+		}
+		void
+			IeRann::SetOriginatorAddress(Mac48Address originator_address)
+		{
+			m_originatorAddress = originator_address;
+		}
 
-uint8_t
-IeRann::GetFlags ()
-{
-  return m_flags;
-}
-uint8_t
-IeRann::GetHopcount ()
-{
-  return m_hopcount;
-}
-uint8_t
-IeRann::GetTtl ()
-{
-  return m_ttl;
-}
-uint32_t
-IeRann::GetDestSeqNumber ()
-{
-  return m_destSeqNumber;
-}
-uint32_t
-IeRann::GetMetric ()
-{
-  return m_metric;
-}
-void
-IeRann::DecrementTtl ()
-{
-  m_ttl--;
-  m_hopcount++;
-}
+		uint8_t
+			IeRann::GetFlags()
+		{
+			return m_flags;
+		}
+		uint8_t
+			IeRann::GetHopcount()
+		{
+			return m_hopcount;
+		}
+		uint8_t
+			IeRann::GetTtl()
+		{
+			return m_ttl;
+		}
+		uint32_t
+			IeRann::GetDestSeqNumber()
+		{
+			return m_destSeqNumber;
+		}
+		uint32_t
+			IeRann::GetMetric()
+		{
+			return m_metric;
+		}
+		void
+			IeRann::DecrementTtl()
+		{
+			m_ttl--;
+			m_hopcount++;
+		}
 
-void
-IeRann::IncrementMetric (uint32_t m)
-{
-  m_metric += m;
-}
+		void
+			IeRann::IncrementMetric(uint32_t m)
+		{
+			m_metric += m;
+		}
 
-Mac48Address
-IeRann::GetOriginatorAddress ()
-{
-  return m_originatorAddress;
-}
-void
-IeRann::SerializeInformationField (Buffer::Iterator i) const
-{
-  i.WriteU8 (m_flags);
-  i.WriteU8 (m_hopcount);
-  i.WriteU8 (m_ttl);
-  WriteTo (i, m_originatorAddress);
-  i.WriteHtolsbU32 (m_destSeqNumber);
-  i.WriteHtolsbU32 (m_metric);
-}
-uint8_t
-IeRann::DeserializeInformationField (Buffer::Iterator start, uint8_t length)
-{
-  Buffer::Iterator i = start;
-  m_flags = i.ReadU8 ();
-  m_hopcount = i.ReadU8 ();
-  m_ttl = i.ReadU8 ();
-  ReadFrom (i, m_originatorAddress);
-  m_destSeqNumber = i.ReadLsbtohU32 ();
-  m_metric = i.ReadLsbtohU32 ();
-  return i.GetDistanceFrom (start);
-}
-uint8_t
-IeRann::GetInformationFieldSize () const
-{
-  uint8_t retval = 1 //Flags
-    + 1   //Hopcount
-    + 1   //TTL
-    + 6   //OriginatorAddress
-    + 4   //DestSeqNumber
-    + 4;  //Metric
-  return retval;
-}
+		Mac48Address
+			IeRann::GetOriginatorAddress()
+		{
+			return m_originatorAddress;
+		}
+		void
+			IeRann::SerializeInformationField(Buffer::Iterator i) const
+		{
+			i.WriteU8(m_flags);
+			i.WriteU8(m_hopcount);
+			i.WriteU8(m_ttl);
+			WriteTo(i, m_originatorAddress);
+			i.WriteHtolsbU32(m_destSeqNumber);
+			i.WriteHtolsbU32(m_metric);
+			i.WriteHtolsbU32(m_originatorSeqNumber);
+			i.WriteU8(m_path.size());
+			for (std::vector<Mac48Address>::const_iterator iter = m_path.begin(); iter != m_path.end(); iter++)
+			{
+				WriteTo(i, *iter);
+			}
+		}
+		uint8_t
+			IeRann::DeserializeInformationField(Buffer::Iterator start, uint8_t length)
+		{
+			Buffer::Iterator i = start;
+			m_flags = i.ReadU8();
+			m_hopcount = i.ReadU8();
+			m_ttl = i.ReadU8();
+			ReadFrom(i, m_originatorAddress);
+			m_destSeqNumber = i.ReadLsbtohU32();
+			m_metric = i.ReadLsbtohU32();
+			m_originatorSeqNumber = i.ReadLsbtohU32();
+			Mac48Address tempAddress;			
+			for (uint8_t count = i.ReadU8(); count > 0; count--)
+			{
+				ReadFrom(i, tempAddress);
+				m_path.push_back(tempAddress);
+			}
+			return i.GetDistanceFrom(start);
+		}
+		uint8_t
+			IeRann::GetInformationFieldSize() const
+		{
+			uint8_t retval = 1 //Flags
+				+ 1   //Hopcount
+				+ 1   //TTL
+				+ 6   //OriginatorAddress
+				+ 4   //DestSeqNumber
+#ifdef HUMGMP_UNUSED_MY_CODE
+				+ 4;  //Metric
+#else
+				+ 4  //Metric
+				+ 4   //OriginatorNumber
+				+ 1   //Node Address Count
+				+ 6 * m_path.size(); //All Path Address
+#endif
+			return retval;
+		}
 
-void
-IeRann::Print (std::ostream &os) const
-{
-  os << std::endl << "<information_element id=" << ElementId () << ">" << std::endl;
-  os << "  flags              = " << (int) m_flags << std::endl;
-  os << "  hop count          = " << (int) m_hopcount << std::endl;
-  os << "  TTL                = " << (int) m_ttl << std::endl;
-  os << "  originator address = " << m_originatorAddress << std::endl;
-  os << "  dst seq. number    = " << m_destSeqNumber << std::endl;
-  os << "  metric             = " << m_metric << std::endl;
-  os << "</information_element>" << std::endl;
-}
+		void
+			IeRann::Print(std::ostream &os) const
+		{
+			os << std::endl << "<information_element id=" << ElementId() << ">" << std::endl;
+			os << "  flags              = " << (int)m_flags << std::endl;
+			os << "  hop count          = " << (int)m_hopcount << std::endl;
+			os << "  TTL                = " << (int)m_ttl << std::endl;
+			os << "  originator address = " << m_originatorAddress << std::endl;
+			os << "  dst seq. number    = " << m_destSeqNumber << std::endl;
+			os << "  metric             = " << m_metric << std::endl;
+#ifndef HUMGMP_UNUSED_MY_CODE
+			os << "  metric             = " << m_originatorSeqNumber << std::endl;
+#endif
+			os << "</information_element>" << std::endl;
+		}
 
-bool
-operator== (const IeRann & a, const IeRann & b)
-{
-  return (a.m_flags == b.m_flags && a.m_hopcount == b.m_hopcount && a.m_ttl == b.m_ttl
-          && a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
-          && a.m_metric == b.m_metric);
-}
-std::ostream &
-operator << (std::ostream &os, const IeRann &a)
-{
-  a.Print (os);
-  return os;
-}
-}
+		bool
+			operator== (const IeRann & a, const IeRann & b)
+		{
+			return (a.m_flags == b.m_flags && a.m_hopcount == b.m_hopcount && a.m_ttl == b.m_ttl
+				&& a.m_originatorAddress == b.m_originatorAddress && a.m_destSeqNumber == b.m_destSeqNumber
+				&& a.m_metric == b.m_metric);
+		}
+		std::ostream &
+			operator << (std::ostream &os, const IeRann &a)
+		{
+			a.Print(os);
+			return os;
+		}
+#ifndef HUMGMP_UNUSED_MY_CODE
+		void IeRann::SetOriginatorSeqNumber(uint32_t originator_seq_number)
+		{
+			m_originatorSeqNumber = originator_seq_number;
+		}
+
+		uint32_t IeRann::GetOriginatorSeqNumber()
+		{
+			return m_originatorSeqNumber;
+		}
+		void IeRann::AddNodeOfPath(Mac48Address address)
+		{
+			m_path.push_back(address);
+		}
+		std::vector<Mac48Address> IeRann::GetPath()
+		{
+			return m_path;
+		}
+#endif
+	}
 } // namespace ns3::hu11s
 
 

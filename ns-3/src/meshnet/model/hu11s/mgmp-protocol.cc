@@ -239,8 +239,8 @@ namespace ns3 {
 				rann.SetHopcount(0);
 				rann.SetTTL(m_maxTtl);
 				rann.SetOriginatorAddress(GetAddress());
-				rann.SetDestSeqNumber(GetNextMgmpSeqno());
 				rann.SetMetric(0);
+				rann.SetOriginatorSeqNumber(GetNextMgmpSeqno());
 				m_proactivePreqTimer = Simulator::Schedule(randomStart, &MgmpProtocol::SendRann, this, rann);
 			}
 #endif
@@ -1230,10 +1230,160 @@ namespace ns3 {
 			}
 			m_proactivePreqTimer = Simulator::Schedule(m_hu11MeshnetMGMPpathToRootInterval, &MgmpProtocol::SendRann, this, rann);
 		}
-		void MgmpProtocol::ReceiveRann(IeRann rann, Mac48Address from, uint32_t, Mac48Address fromMp, uint32_t metric)
+		void MgmpProtocol::ReceiveRann(IeRann rann, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric)
 		{
 			NS_LOG_DEBUG("Receive Rann");
 			rann.IncrementMetric(metric);
+			//acceptance cretirea:
+			std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_mgmpSeqnoMetricDatabase.find(
+				rann.GetOriginatorAddress());
+			bool freshInfo(true);
+			if (i != m_mgmpSeqnoMetricDatabase.end())
+			{
+				if ((int32_t)(i->second.first - rann.GetOriginatorSeqNumber()) > 0)
+				{
+					return;
+				}
+				if (i->second.first == rann.GetOriginatorSeqNumber())
+				{
+					freshInfo = false;
+					if (i->second.second <= rann.GetMetric())
+					{
+						return;
+					}
+				}
+			}
+			m_mgmpSeqnoMetricDatabase[rann.GetOriginatorAddress()] =
+				std::make_pair(rann.GetOriginatorSeqNumber(), rann.GetMetric());
+			NS_LOG_DEBUG("I am " << GetAddress() << "Accepted rann from address" << from << ", rann:" << rann);
+			//Add reactive path to originator:
+			if (freshInfo || m_rtable->LookupReactive(rann.GetOriginatorAddress()).metric > rann.GetMetric())
+			{
+				m_rtable->AddReactivePath(
+					rann.GetOriginatorAddress(),
+					from,
+					interface,
+					rann.GetMetric(),
+					MicroSeconds(m_hu11MeshnetMGMPactiveRootTimeout.GetMicroSeconds()),
+					rann.GetOriginatorSeqNumber()
+					);
+				ReactivePathResolved(rann.GetOriginatorAddress());
+			}
+			if (m_rtable->LookupReactive(fromMp).metric > metric)
+			{
+				m_rtable->AddReactivePath(
+					fromMp,
+					from,
+					interface,
+					metric,
+					MicroSeconds(m_hu11MeshnetMGMPactiveRootTimeout.GetMicroSeconds()),
+					rann.GetOriginatorSeqNumber()
+					);
+				ReactivePathResolved(fromMp);
+			}
+
+			std::vector<Mac48Address> destinations = rann.GetPath();
+			for (std::vector<Mac48Address>::const_iterator i = destinations.begin(); i != destinations.end(); i++)
+			{
+			//	if ((*i)->GetDestinationAddress() == Mac48Address::GetBroadcast())
+			//	{
+			//		//only proactive PREQ contains destination
+			//		//address as broadcast! Proactive preq MUST
+			//		//have destination count equal to 1 and
+			//		//per destination flags DO and RF
+			//		NS_ASSERT(preq.GetDestCount() == 1);
+			//		NS_ASSERT(((*i)->IsDo()) && ((*i)->IsRf()));
+			//		//Add proactive path only if it is the better then existed
+			//		//before
+			//		if (
+			//			((m_rtable->LookupProactive()).retransmitter == Mac48Address::GetBroadcast()) ||
+			//			((m_rtable->LookupProactive()).metric > preq.GetMetric())
+			//			)
+			//		{
+			//			m_rtable->AddProactivePath(
+			//				preq.GetMetric(),
+			//				preq.GetOriginatorAddress(),
+			//				from,
+			//			interface,
+			//				MicroSeconds(preq.GetLifetime() * 1024),
+			//				preq.GetOriginatorSeqNumber()
+			//				);
+			//			ProactivePathResolved();
+			//		}
+			//		if (!preq.IsNeedNotPrep())
+			//		{
+			//			SendPrep(
+			//				GetAddress(),
+			//				preq.GetOriginatorAddress(),
+			//				from,
+			//				(uint32_t)0,
+			//				preq.GetOriginatorSeqNumber(),
+			//				GetNextMgmpSeqno(),
+			//				preq.GetLifetime(),
+			//			interface
+			//				);
+			//		}
+			//		break;
+			//	}
+			//	if ((*i)->GetDestinationAddress() == GetAddress())
+			//	{
+			//		SendPrep(
+			//			GetAddress(),
+			//			preq.GetOriginatorAddress(),
+			//			from,
+			//			(uint32_t)0,
+			//			preq.GetOriginatorSeqNumber(),
+			//			GetNextMgmpSeqno(),
+			//			preq.GetLifetime(),
+			//		interface
+			//			);
+			//		NS_ASSERT(m_rtable->LookupReactive(preq.GetOriginatorAddress()).retransmitter != Mac48Address::GetBroadcast());
+			//		preq.DelDestinationAddressElement((*i)->GetDestinationAddress());
+			//		continue;
+			//	}
+			//	//check if can answer:
+			//	MgmpRtable::LookupResult result = m_rtable->LookupReactive((*i)->GetDestinationAddress());
+			//	if ((!((*i)->IsDo())) && (result.retransmitter != Mac48Address::GetBroadcast()))
+			//	{
+			//		//have a valid information and can answer
+			//		uint32_t lifetime = result.lifetime.GetMicroSeconds() / 1024;
+			//		if ((lifetime > 0) && ((int32_t)(result.seqnum - (*i)->GetDestSeqNumber()) >= 0))
+			//		{
+			//			SendPrep(
+			//				(*i)->GetDestinationAddress(),
+			//				preq.GetOriginatorAddress(),
+			//				from,
+			//				result.metric,
+			//				preq.GetOriginatorSeqNumber(),
+			//				result.seqnum,
+			//				lifetime,
+			//			interface
+			//				);
+			//			m_rtable->AddPrecursor((*i)->GetDestinationAddress(), interface, from,
+			//				MicroSeconds(preq.GetLifetime() * 1024));
+			//			if ((*i)->IsRf())
+			//			{
+			//				(*i)->SetFlags(true, false, (*i)->IsUsn()); //DO = 1, RF = 0
+			//			}
+			//			else
+			//			{
+			//				preq.DelDestinationAddressElement((*i)->GetDestinationAddress());
+			//				continue;
+			//			}
+			//		}
+			//	}
+			}
+			////check if must retransmit:
+			//if (preq.GetDestCount() == 0)
+			//{
+			//	return;
+			//}
+			////Forward PREQ to all interfaces:
+			//NS_LOG_DEBUG("I am " << GetAddress() << "retransmitting PREQ:" << preq);
+			//for (MgmpProtocolMacMap::const_iterator i = m_interfaces.begin(); i != m_interfaces.end(); i++)
+			//{
+			//	i->second->SendPreq(preq);
+			//}
 		}
 		std::vector<Mac48Address> MgmpProtocol::GetRannReceivers(uint32_t interface)
 		{

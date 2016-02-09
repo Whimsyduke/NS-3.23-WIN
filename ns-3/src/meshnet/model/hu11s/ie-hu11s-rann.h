@@ -25,52 +25,63 @@
 #include "ns3/meshnet-information-element-vector.h"
 
 namespace ns3 {
-namespace hu11s {
-/**
- * \ingroup hu11s
- * \brief See 7.3.2.95 of 802.11s draft 2.07
- */
-class IeRann : public WifiInformationElement
-{
-public:
-  IeRann ();
-  virtual ~IeRann ();
-  void SetFlags (uint8_t flags);
-  void SetHopcount (uint8_t hopcount);
-  void SetTTL (uint8_t ttl);
-  void SetOriginatorAddress (Mac48Address originator_address);
-  void SetDestSeqNumber (uint32_t dest_seq_number);
-  void SetMetric (uint32_t metric);
-  uint8_t GetFlags ();
-  uint8_t GetHopcount ();
-  uint8_t GetTtl ();
-  Mac48Address GetOriginatorAddress ();
-  uint32_t GetDestSeqNumber ();
-  uint32_t GetMetric ();
-  void DecrementTtl ();
-  void IncrementMetric (uint32_t metric);
+	namespace hu11s {
+		/**
+		 * \ingroup hu11s
+		 * \brief See 7.3.2.95 of 802.11s draft 2.07
+		 */
+		class IeRann : public WifiInformationElement
+		{
+		public:
+			IeRann();
+			virtual ~IeRann();
+			void SetFlags(uint8_t flags);
+			void SetHopcount(uint8_t hopcount);
+			void SetTTL(uint8_t ttl);
+			void SetOriginatorAddress(Mac48Address originator_address);
+			void SetDestSeqNumber(uint32_t dest_seq_number);
+			void SetMetric(uint32_t metric);
+			uint8_t GetFlags();
+			uint8_t GetHopcount();
+			uint8_t GetTtl();
+			Mac48Address GetOriginatorAddress();
+			uint32_t GetDestSeqNumber();
+			uint32_t GetMetric();
+			void DecrementTtl();
+			void IncrementMetric(uint32_t metric);
 
-  // Inherited from WifiInformationElement
-  virtual WifiInformationElementId ElementId () const;
-  virtual void SerializeInformationField (Buffer::Iterator i) const;
-  virtual uint8_t DeserializeInformationField (Buffer::Iterator start, uint8_t length);
-  virtual uint8_t GetInformationFieldSize () const;
-  virtual void Print (std::ostream &os) const;
+			// Inherited from WifiInformationElement
+			virtual WifiInformationElementId ElementId() const;
+			virtual void SerializeInformationField(Buffer::Iterator i) const;
+			virtual uint8_t DeserializeInformationField(Buffer::Iterator start, uint8_t length);
+			virtual uint8_t GetInformationFieldSize() const;
+			virtual void Print(std::ostream &os) const;
 
-private:
-  uint8_t m_flags;
-  uint8_t m_hopcount;
-  uint8_t m_ttl;
-  Mac48Address m_originatorAddress;
-  uint32_t m_destSeqNumber;
-  uint32_t m_metric;
+#ifndef HUMGMP_UNUSED_MY_CODE
+			void SetOriginatorSeqNumber(uint32_t originator_seq_number);
+			uint32_t GetOriginatorSeqNumber();
+			void AddNodeOfPath(Mac48Address address);
+			std::vector<Mac48Address> GetPath();
+#endif
 
-  friend bool operator== (const IeRann & a, const IeRann & b);
-};
+		private:
+			uint8_t m_flags;
+			uint8_t m_hopcount;
+			uint8_t m_ttl;
+			Mac48Address m_originatorAddress;
+			uint32_t m_destSeqNumber;
+			uint32_t m_metric;
 
-bool operator== (const IeRann & a, const IeRann & b);
-std::ostream &operator << (std::ostream &os, const IeRann &rann);
-} // namespace hu11s
+			friend bool operator== (const IeRann & a, const IeRann & b);
+#ifndef HUMGMP_UNUSED_MY_CODE
+			uint32_t m_originatorSeqNumber;
+			std::vector<Mac48Address> m_path;
+#endif
+		};
+
+		bool operator== (const IeRann & a, const IeRann & b);
+		std::ostream &operator << (std::ostream &os, const IeRann &rann);
+	} // namespace hu11s
 } // namespace ns3
 
 #endif
