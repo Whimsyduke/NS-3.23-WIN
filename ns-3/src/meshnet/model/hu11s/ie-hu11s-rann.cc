@@ -124,6 +124,7 @@ namespace ns3 {
 			i.WriteHtolsbU32(m_destSeqNumber);
 			i.WriteHtolsbU32(m_metric);
 			i.WriteHtolsbU32(m_originatorSeqNumber);
+			i.WriteU8(m_level);
 			i.WriteU8(m_path.size());
 			for (std::vector<Mac48Address>::const_iterator iter = m_path.begin(); iter != m_path.end(); iter++)
 			{
@@ -141,6 +142,7 @@ namespace ns3 {
 			m_destSeqNumber = i.ReadLsbtohU32();
 			m_metric = i.ReadLsbtohU32();
 			m_originatorSeqNumber = i.ReadLsbtohU32();
+			m_level = i.ReadU8();
 			Mac48Address tempAddress;			
 			for (uint8_t count = i.ReadU8(); count > 0; count--)
 			{
@@ -163,6 +165,7 @@ namespace ns3 {
 				+ 4  //Metric
 				+ 4   //OriginatorNumber
 				+ 1   //Node Address Count
+				+ 1   //Level
 				+ 6 * m_path.size(); //All Path Address
 #endif
 			return retval;
@@ -179,7 +182,8 @@ namespace ns3 {
 			os << "  dst seq. number    = " << m_destSeqNumber << std::endl;
 			os << "  metric             = " << m_metric << std::endl;
 #ifndef HUMGMP_UNUSED_MY_CODE
-			os << "  metric             = " << m_originatorSeqNumber << std::endl;
+			os << "  orig seq. number   = " << m_originatorSeqNumber << std::endl;
+			os << "  level              = " << m_level << std::endl;
 #endif
 			os << "</information_element>" << std::endl;
 		}
@@ -206,6 +210,14 @@ namespace ns3 {
 		uint32_t IeRann::GetOriginatorSeqNumber()
 		{
 			return m_originatorSeqNumber;
+		}
+		void IeRann::SetLevel(uint8_t level)
+		{
+			m_level = level;
+		}
+		uint8_t IeRann::GetLevel()
+		{
+			return m_level;
 		}
 		void IeRann::AddNodeOfPath(Mac48Address address)
 		{

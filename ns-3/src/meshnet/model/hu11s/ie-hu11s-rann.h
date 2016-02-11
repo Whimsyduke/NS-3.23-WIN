@@ -58,8 +58,10 @@ namespace ns3 {
 			virtual void Print(std::ostream &os) const;
 
 #ifndef HUMGMP_UNUSED_MY_CODE
-			void SetOriginatorSeqNumber(uint32_t originator_seq_number);
+			void SetOriginatorSeqNumber(uint32_t level);
 			uint32_t GetOriginatorSeqNumber();
+			void SetLevel(uint8_t originator_seq_number);
+			uint8_t GetLevel();
 			void AddNodeOfPath(Mac48Address address);
 			std::vector<Mac48Address> GetPath();
 #endif
@@ -74,6 +76,7 @@ namespace ns3 {
 
 			friend bool operator== (const IeRann & a, const IeRann & b);
 #ifndef HUMGMP_UNUSED_MY_CODE
+			uint8_t m_level;
 			uint32_t m_originatorSeqNumber;
 			std::vector<Mac48Address> m_path;
 #endif

@@ -26,121 +26,161 @@
 #include "ns3/mac48-address.h"
 #include "ns3/mgmp-protocol.h"
 namespace ns3 {
-namespace hu11s {
-/**
- * \ingroup hu11s
- *
- * \brief Routing table for MGMP -- 802.11s routing protocol
- */
-class MgmpRtable : public Object
-{
-public:
-  /// Means all interfaces
-  const static uint32_t INTERFACE_ANY = 0xffffffff;
-  /// Maximum (the best?) path metric
-  const static uint32_t MAX_METRIC = 0xffffffff;
+	namespace hu11s {
+		/**
+		 * \ingroup hu11s
+		 *
+		 * \brief Routing table for MGMP -- 802.11s routing protocol
+		 */
+		class MgmpRtable : public Object
+		{
+		public:
+			/// Means all interfaces
+			const static uint32_t INTERFACE_ANY = 0xffffffff;
+			/// Maximum (the best?) path metric
+			const static uint32_t MAX_METRIC = 0xffffffff;
 
-  /// Route lookup result, return type of LookupXXX methods
-  struct LookupResult
-  {
-    Mac48Address retransmitter;
-    uint32_t ifIndex;
-    uint32_t metric;
-    uint32_t seqnum;
-    Time lifetime;
-    LookupResult (Mac48Address r = Mac48Address::GetBroadcast (),
-                  uint32_t i = INTERFACE_ANY,
-                  uint32_t m = MAX_METRIC,
-                  uint32_t s = 0,
-                  Time l = Seconds (0.0));
-    /// True for valid route
-    bool IsValid () const;
-    /// Compare route lookup results, used by tests
-    bool operator== (const LookupResult & o) const;
-  };
-  /// Path precursor = {MAC, interface ID}
-  typedef std::vector<std::pair<uint32_t, Mac48Address> > PrecursorList;
+			/// Route lookup result, return type of LookupXXX methods
+			struct LookupResult
+			{
+				Mac48Address retransmitter;
+				uint32_t ifIndex;
+				uint32_t metric;
+				uint32_t seqnum;
+				Time lifetime;
+				LookupResult(Mac48Address r = Mac48Address::GetBroadcast(),
+					uint32_t i = INTERFACE_ANY,
+					uint32_t m = MAX_METRIC,
+					uint32_t s = 0,
+					Time l = Seconds(0.0));
+				/// True for valid route
+				bool IsValid() const;
+				/// Compare route lookup results, used by tests
+				bool operator== (const LookupResult & o) const;
+			};
+			/// Path precursor = {MAC, interface ID}
+			typedef std::vector<std::pair<uint32_t, Mac48Address> > PrecursorList;
 
-public:
-  static TypeId GetTypeId ();
-  MgmpRtable ();
-  ~MgmpRtable ();
-  void DoDispose ();
+		public:
+			static TypeId GetTypeId();
+			MgmpRtable();
+			~MgmpRtable();
+			void DoDispose();
 
-  ///\name Add/delete paths
-  //\{
-  void AddReactivePath (
-    Mac48Address destination,
-    Mac48Address retransmitter,
-    uint32_t interface,
-    uint32_t metric,
-    Time  lifetime,
-    uint32_t seqnum
-    );
-  void AddProactivePath (
-    uint32_t metric,
-    Mac48Address root,
-    Mac48Address retransmitter,
-    uint32_t interface,
-    Time  lifetime,
-    uint32_t seqnum
-    );
-  void AddPrecursor (Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
-  PrecursorList GetPrecursors (Mac48Address destination);
-  void DeleteProactivePath ();
-  void DeleteProactivePath (Mac48Address root);
-  void DeleteReactivePath (Mac48Address destination);
-  //\}
+			///\name Add/delete paths
+			//\{
+			void AddReactivePath(
+				Mac48Address destination,
+				Mac48Address retransmitter,
+				uint32_t interface,
+				uint32_t metric,
+				Time  lifetime,
+				uint32_t seqnum
+				);
+			void AddProactivePath(
+				uint32_t metric,
+				Mac48Address root,
+				Mac48Address retransmitter,
+				uint32_t interface,
+				Time  lifetime,
+				uint32_t seqnum
+				);
+			void AddPrecursor(Mac48Address destination, uint32_t precursorInterface, Mac48Address precursorAddress, Time lifetime);
+			PrecursorList GetPrecursors(Mac48Address destination);
+			void DeleteProactivePath();
+			void DeleteProactivePath(Mac48Address root);
+			void DeleteReactivePath(Mac48Address destination);
+			//\}
 
-  ///\name Lookup
-  //\{
-  /// Lookup path to destination
-  LookupResult LookupReactive (Mac48Address destination);
-  /// Return all reactive paths, including expired
-  LookupResult LookupReactiveExpired (Mac48Address destination);
-  /// Find proactive path to tree root. Note that calling this method has side effect of deleting expired proactive path
-  LookupResult LookupProactive ();
-  /// Return all proactive paths, including expired
-  LookupResult LookupProactiveExpired ();
-  //\}
+			///\name Lookup
+			//\{
+			/// Lookup path to destination
+			LookupResult LookupReactive(Mac48Address destination);
+			/// Return all reactive paths, including expired
+			LookupResult LookupReactiveExpired(Mac48Address destination);
+			/// Find proactive path to tree root. Note that calling this method has side effect of deleting expired proactive path
+			LookupResult LookupProactive();
+			/// Return all proactive paths, including expired
+			LookupResult LookupProactiveExpired();
+			//\}
 
-  /// When huper link with a given MAC-address fails - it returns list of unreachable destination addresses
-  std::vector<MgmpProtocol::FailedDestination> GetUnreachableDestinations (Mac48Address huperAddress);
+			/// When huper link with a given MAC-address fails - it returns list of unreachable destination addresses
+			std::vector<MgmpProtocol::FailedDestination> GetUnreachableDestinations(Mac48Address huperAddress);
+#ifndef HUMGMP_UNUSED_MY_CODE
+			void AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time  lifetime, uint32_t seqnum, std::vector<Mac48Address> path);
+			void ClearProactivePath();
+			void DeleteProactiveTree(Mac48Address root);
+			void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path);
+			static std::string GetPathString(Mac48Address root, std::vector<Mac48Address> path);
+			void AutoRefresh();
+			uint8_t GetLevel();
+			LookupResult LookupProactive(Mac48Address root);
+			LookupResult LookupProactiveExpired(Mac48Address root);
+#endif
 
-private:
-  /// Route found in reactive mode
-  struct Precursor
-  {
-    Mac48Address address;
-    uint32_t interface;
-    Time whenExpire;
-  };
-  struct ReactiveRoute
-  {
-    Mac48Address retransmitter;
-    uint32_t interface;
-    uint32_t metric;
-    Time whenExpire;
-    uint32_t seqnum;
-    std::vector<Precursor> precursors;
-  };
-  /// Route fond in proactive mode
-  struct ProactiveRoute
-  {
-    Mac48Address root;
-    Mac48Address retransmitter;
-    uint32_t interface;
-    uint32_t metric;
-    Time whenExpire;
-    uint32_t seqnum;
-    std::vector<Precursor> precursors;
-  };
-
-  /// List of routes
-  std::map<Mac48Address, ReactiveRoute>  m_routes;
-  /// Path to proactive tree root MP
-  ProactiveRoute  m_root;
-};
-} // namespace hu11s
+		private:
+			/// Route found in reactive mode
+			struct Precursor
+			{
+				Mac48Address address;
+				uint32_t interface;
+				Time whenExpire;
+			};
+			struct ReactiveRoute
+			{
+				Mac48Address retransmitter;
+				uint32_t interface;
+				uint32_t metric;
+				Time whenExpire;
+				uint32_t seqnum;
+				std::vector<Precursor> precursors;
+			};
+			/// Route fond in proactive mode
+#ifndef HUMGMP_UNUSED_MY_CODE
+			struct ProactiveRoute : public Object
+#else
+			struct ProactiveRoute
+#endif
+			{
+				Mac48Address root;
+				Mac48Address retransmitter;
+				uint32_t interface;
+				uint32_t metric;
+				Time whenExpire;
+				uint32_t seqnum;
+				std::vector<Precursor> precursors;
+#ifndef HUMGMP_UNUSED_MY_CODE
+				std::vector<Mac48Address> path;
+#endif
+			};
+#ifndef HUMGMP_UNUSED_MY_CODE
+			class ProactiveTree
+			{
+			public:
+				ProactiveTree();
+				~ProactiveTree();
+				void AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time  lifetime, uint32_t seqnum, std::vector<Mac48Address> path);
+				void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path);
+				void RefreshMainRoute();
+				Ptr<ProactiveRoute> GetMiniRoute();
+				ProactiveRoute GetBestRoute();
+				void CheckExpire();
+			private:
+				std::map<std::string, ProactiveRoute> m_routes;
+				Ptr<ProactiveRoute> m_mainRoute;
+			};
+#endif
+			/// List of routes
+			std::map<Mac48Address, ReactiveRoute>  m_routes;
+			/// Path to proactive tree root MP
+			ProactiveRoute  m_root;
+#ifndef HUMGMP_UNUSED_MY_CODE
+			std::map<Mac48Address, ProactiveTree>  m_trees;
+			uint8_t m_level;
+			Ptr<ProactiveRoute> m_levelRoute;
+			Time m_refreshTime;
+#endif
+		};
+	} // namespace hu11s
 } // namespace ns3
 #endif
