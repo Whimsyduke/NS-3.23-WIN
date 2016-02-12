@@ -366,7 +366,11 @@ namespace ns3 {
 			NS_LOG_DEBUG("Requested src = " << source << ", dst = " << destination << ", I am " << GetAddress() << ", RA = " << result.retransmitter);
 			if (result.retransmitter == Mac48Address::GetBroadcast())
 			{
+#ifndef HUMGMP_UNUSED_MY_CODE
+				result = m_rtable->LookupProactiveBest();
+#else
 				result = m_rtable->LookupProactive();
+#endif
 			}
 			MgmpTag tag;
 			tag.SetAddress(result.retransmitter);
@@ -393,7 +397,11 @@ namespace ns3 {
 				//    root
 				if (result.retransmitter == Mac48Address::GetBroadcast())
 				{
+#ifndef HUMGMP_UNUSED_MY_CODE
+					result = m_rtable->LookupProactiveBestExpired();
+#else
 					result = m_rtable->LookupProactiveExpired();
+#endif
 				}
 				if (result.retransmitter != Mac48Address::GetBroadcast())
 				{
@@ -510,9 +518,16 @@ namespace ns3 {
 					NS_ASSERT(((*i)->IsDo()) && ((*i)->IsRf()));
 					//Add proactive path only if it is the better then existed
 					//before
+#ifndef HUMGMP_UNUSED_MY_CODE
+					MgmpRtable::LookupResult result = m_rtable->LookupProactiveBest();
+					if (
+						(result.retransmitter == Mac48Address::GetBroadcast()) ||
+						(result.metric > preq.GetMetric())
+#else
 					if (
 						((m_rtable->LookupProactive()).retransmitter == Mac48Address::GetBroadcast()) ||
 						((m_rtable->LookupProactive()).metric > preq.GetMetric())
+#endif
 						)
 					{
 						m_rtable->AddProactivePath(
@@ -857,7 +872,11 @@ namespace ns3 {
 			{
 				MgmpRtable::PrecursorList precursors = m_rtable->GetPrecursors(failedDest[i].destination);
 				m_rtable->DeleteReactivePath(failedDest[i].destination);
+#ifndef HUMGMP_UNUSED_MY_CODE
+				m_rtable->DeleteProactiveTree(failedDest[i].destination);
+#else
 				m_rtable->DeleteProactivePath(failedDest[i].destination);
+#endif
 				for (unsigned int j = 0; j < precursors.size(); j++)
 				{
 					retval.push_back(precursors[j]);
@@ -979,7 +998,11 @@ namespace ns3 {
 			MgmpProtocol::ProactivePathResolved()
 		{
 			//send all packets to root
+#ifndef HUMGMP_UNUSED_MY_CODE
+			MgmpRtable::LookupResult result = m_rtable->LookupProactiveBest();
+#else
 			MgmpRtable::LookupResult result = m_rtable->LookupProactive();
+#endif
 			NS_ASSERT(result.retransmitter != Mac48Address::GetBroadcast());
 			QueuedPacket packet = DequeueFirstPacket();
 			while (packet.pkt != 0)
@@ -1020,7 +1043,11 @@ namespace ns3 {
 			MgmpRtable::LookupResult result = m_rtable->LookupReactive(dst);
 			if (result.retransmitter == Mac48Address::GetBroadcast())
 			{
+#ifndef HUMGMP_UNUSED_MY_CODE
+				result = m_rtable->LookupProactiveBest();
+#else
 				result = m_rtable->LookupProactive();
+#endif
 			}
 			if (result.retransmitter != Mac48Address::GetBroadcast())
 			{
@@ -1233,11 +1260,15 @@ namespace ns3 {
 		}
 		void MgmpProtocol::ReceiveRann(IeRann rann, Mac48Address from, uint32_t interface, Mac48Address fromMp, uint32_t metric)
 		{
-			NS_LOG_DEBUG("Receive Rann");
+			NS_LOG_DEBUG("Receive Rann" << rann << " at " << m_address << " from:" << from << " interface:" << interface << " fromMp:" << fromMp << " metric:" << metric);
+			// if Rann is from up level ,drop it.
+			if (rann.GetLevel() > m_rtable->GetLevel())
+			{
+				return;
+			}
 			rann.IncrementMetric(metric);
 			//acceptance cretirea:
-			std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_mgmpSeqnoMetricDatabase.find(
-				rann.GetOriginatorAddress());
+			std::map<Mac48Address, std::pair<uint32_t, uint32_t> >::const_iterator i = m_mgmpSeqnoMetricDatabase.find(rann.GetOriginatorAddress());
 			bool freshInfo(true);
 			if (i != m_mgmpSeqnoMetricDatabase.end())
 			{
@@ -1254,8 +1285,7 @@ namespace ns3 {
 					}
 				}
 			}
-			m_mgmpSeqnoMetricDatabase[rann.GetOriginatorAddress()] =
-				std::make_pair(rann.GetOriginatorSeqNumber(), rann.GetMetric());
+			m_mgmpSeqnoMetricDatabase[rann.GetOriginatorAddress()] = std::make_pair(rann.GetOriginatorSeqNumber(), rann.GetMetric());
 			NS_LOG_DEBUG("I am " << GetAddress() << "Accepted rann from address" << from << ", rann:" << rann);
 			//Add reactive path to originator:
 			if (freshInfo || m_rtable->LookupReactive(rann.GetOriginatorAddress()).metric > rann.GetMetric())
@@ -1284,6 +1314,22 @@ namespace ns3 {
 			}
 
 			std::vector<Mac48Address> path = rann.GetPath();
+			m_rtable->AddProactivePath(
+				rann.GetMetric(),
+				rann.GetOriginatorAddress(),
+				from,
+				interface,
+				MicroSeconds(m_hu11MeshnetMGMPactiveRootTimeout.GetMicroSeconds()),
+				rann.GetOriginatorSeqNumber(),
+				path
+				);
+			//if from main route, the rann will transmit
+			if (m_rtable->CheckMainRoute(rann.GetOriginatorAddress(), path))
+			{
+				NS_LOG_DEBUG("Transmit Rann at " << m_address << " rann" << rann);
+				rann.GetPath().push_back(m_address);
+				SendRann(rann);
+			}			
 		}
 		std::vector<Mac48Address> MgmpProtocol::GetRannReceivers(uint32_t interface)
 		{

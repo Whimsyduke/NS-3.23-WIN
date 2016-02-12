@@ -58,6 +58,9 @@ namespace ns3 {
 #endif
 		{
 			DeleteProactivePath();
+#ifndef HUMGMP_UNUSED_MY_CODE
+			ScheduleEvent();
+#endif
 		}
 		MgmpRtable::~MgmpRtable()
 		{
@@ -66,6 +69,9 @@ namespace ns3 {
 			MgmpRtable::DoDispose()
 		{
 			m_routes.clear();
+#ifndef HUMGMP_UNUSED_MY_CODE
+			m_trees.clear();
+#endif
 		}
 		void
 			MgmpRtable::AddReactivePath(Mac48Address destination, Mac48Address retransmitter, uint32_t interface,
@@ -270,6 +276,10 @@ namespace ns3 {
 				ProactiveRoute newRoute;
 				m_routes[key] = newRoute;
 			}
+			if (m_routes.size() == 0)
+			{
+				m_mainRoute = &(route->second);
+			}
 			route->second.root = root;
 			route->second.retransmitter = retransmitter;
 			route->second.metric = metric;
@@ -294,6 +304,16 @@ namespace ns3 {
 					m_routes.erase(route);
 				}
 			}
+		}
+		bool MgmpRtable::ProactiveTree::CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path)
+		{
+			std::string key = MgmpRtable::GetPathString(root, path);
+			std::map<std::string, ProactiveRoute>::iterator route = m_routes.find(key);
+			if (route == m_routes.end())
+			{
+				return false;
+			}
+			return &(route->second) == m_mainRoute;
 		}
 		void MgmpRtable::ProactiveTree::RefreshMainRoute()
 		{
@@ -432,10 +452,51 @@ namespace ns3 {
 					m_levelRoute = route;
 				}
 			}
+			NS_LOG_DEBUG("AutoRefresh , level: " << m_level);
 		}
 		uint8_t MgmpRtable::GetLevel()
 		{
 			return m_level;
+		}
+		void MgmpRtable::ScheduleEvent()
+		{
+			AutoRefresh();
+			Simulator::Schedule(Seconds(m_refreshTime), &MgmpRtable::ScheduleEvent, this);
+		}
+		bool MgmpRtable::CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path)
+		{
+			std::map<Mac48Address, ProactiveTree>::iterator tree = m_trees.find(root);
+			if (tree == m_trees.end())
+			{
+				return false;
+			}
+			return tree->second.CheckMainRoute(root, path);
+		}
+		MgmpRtable::LookupResult MgmpRtable::LookupProactiveBest()
+		{
+			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
+			{
+				iter->second.CheckExpire();
+			}
+			return LookupProactiveBestExpired();
+		}
+		MgmpRtable::LookupResult MgmpRtable::LookupProactiveBestExpired()
+		{
+			if (m_trees.size == 0)
+			{
+				return LookupResult(Mac48Address::GetBroadcast(), INTERFACE_ANY, MAX_METRIC, 0, Simulator::Now());
+			}
+			ProactiveRoute best = m_trees.begin()->second.GetBestRoute();
+			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
+			{
+				ProactiveRoute temp = iter->second.GetBestRoute();
+				if (best.metric > temp.metric)
+				{
+					best = temp;
+				}
+			}
+			return LookupResult(best.retransmitter, best.interface, best.metric, best.seqnum, best.whenExpire - Simulator::Now());
+
 		}
 		MgmpRtable::LookupResult MgmpRtable::LookupProactive(Mac48Address root)
 		{
@@ -448,6 +509,7 @@ namespace ns3 {
 			else
 			{
 				tree->second.CheckExpire();
+				AutoRefresh();
 			}
 			return LookupProactiveExpired(root);
 		}
@@ -460,8 +522,7 @@ namespace ns3 {
 				m_trees[root] = newTree;
 			}
 			ProactiveRoute best = tree->second.GetBestRoute();
-			return LookupResult(best.retransmitter, best.interface, best.metric, best.seqnum,
-				best.whenExpire - Simulator::Now());
+			return LookupResult(best.retransmitter, best.interface, best.metric, best.seqnum, best.whenExpire - Simulator::Now());
 		}
 #endif
 	} // namespace hu11s

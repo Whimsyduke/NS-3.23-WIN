@@ -114,6 +114,10 @@ namespace ns3 {
 			static std::string GetPathString(Mac48Address root, std::vector<Mac48Address> path);
 			void AutoRefresh();
 			uint8_t GetLevel();
+			void ScheduleEvent();
+			bool CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path);
+			LookupResult LookupProactiveBest();
+			LookupResult LookupProactiveBestExpired();
 			LookupResult LookupProactive(Mac48Address root);
 			LookupResult LookupProactiveExpired(Mac48Address root);
 #endif
@@ -160,7 +164,8 @@ namespace ns3 {
 				ProactiveTree();
 				~ProactiveTree();
 				void AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time  lifetime, uint32_t seqnum, std::vector<Mac48Address> path);
-				void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path);
+				void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path); 
+				bool CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path);
 				void RefreshMainRoute();
 				Ptr<ProactiveRoute> GetMiniRoute();
 				ProactiveRoute GetBestRoute();
