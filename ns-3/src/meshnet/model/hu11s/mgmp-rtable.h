@@ -119,7 +119,8 @@ namespace ns3 {
 			LookupResult LookupProactiveBest();
 			LookupResult LookupProactiveBestExpired();
 			LookupResult LookupProactive(Mac48Address root);
-			LookupResult LookupProactiveExpired(Mac48Address root);
+			LookupResult LookupProactiveExpired(Mac48Address root);	
+			std::vector<MgmpProtocol::FailedDestination> GetUnreachableDestinationsAll(Mac48Address huperAddress);
 #endif
 
 		private:
@@ -162,6 +163,7 @@ namespace ns3 {
 			{
 			public:
 				ProactiveTree();
+				ProactiveTree(Mac48Address root);
 				~ProactiveTree();
 				void AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time  lifetime, uint32_t seqnum, std::vector<Mac48Address> path);
 				void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path); 
@@ -170,9 +172,11 @@ namespace ns3 {
 				Ptr<ProactiveRoute> GetMiniRoute();
 				ProactiveRoute GetBestRoute();
 				void CheckExpire();
+				Ptr<ProactiveRoute> CheckRetransmitterExist(Mac48Address address);
 			private:
 				std::map<std::string, ProactiveRoute> m_routes;
 				Ptr<ProactiveRoute> m_mainRoute;
+				Mac48Address m_root;
 			};
 #endif
 			/// List of routes

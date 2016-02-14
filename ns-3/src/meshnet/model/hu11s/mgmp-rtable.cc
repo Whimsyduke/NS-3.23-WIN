@@ -263,6 +263,10 @@ namespace ns3 {
 		MgmpRtable::ProactiveTree::ProactiveTree()
 		{
 		}
+		MgmpRtable::ProactiveTree::ProactiveTree(Mac48Address root)
+		{
+			m_root = root;
+		}
 		MgmpRtable::ProactiveTree::~ProactiveTree()
 		{
 			m_routes.clear();
@@ -397,12 +401,23 @@ namespace ns3 {
 				}
 			}
 		}
+		Ptr<MgmpRtable::ProactiveRoute> MgmpRtable::ProactiveTree::CheckRetransmitterExist(Mac48Address address)
+		{
+			for (std::map<std::string, ProactiveRoute>::iterator iter = m_routes.begin(); iter != m_routes.end(); iter++)
+			{
+				if (iter->second.retransmitter == address)
+				{
+					return &(iter->second);
+				}
+			}
+			return nullptr;
+		}
 		void MgmpRtable::AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time lifetime, uint32_t seqnum, std::vector<Mac48Address> path)
 		{
 			std::map<Mac48Address, ProactiveTree>::iterator tree = m_trees.find(root);
 			if (tree == m_trees.end())
 			{
-				ProactiveTree newTree;
+				ProactiveTree newTree = ProactiveTree(root);
 				m_trees[root] = newTree;
 			}
 			tree->second.AddProactivePath(metric, root, retransmitter, interface, lifetime, seqnum, path);
@@ -482,7 +497,7 @@ namespace ns3 {
 		}
 		MgmpRtable::LookupResult MgmpRtable::LookupProactiveBestExpired()
 		{
-			if (m_trees.size == 0)
+			if (m_trees.size() == 0)
 			{
 				return LookupResult(Mac48Address::GetBroadcast(), INTERFACE_ANY, MAX_METRIC, 0, Simulator::Now());
 			}
@@ -503,7 +518,7 @@ namespace ns3 {
 			std::map<Mac48Address, ProactiveTree>::iterator tree = m_trees.find(root);
 			if (tree == m_trees.end())
 			{
-				ProactiveTree newTree;
+				ProactiveTree newTree = ProactiveTree(root);
 				m_trees[root] = newTree;
 			}
 			else
@@ -518,11 +533,39 @@ namespace ns3 {
 			std::map<Mac48Address, ProactiveTree>::iterator tree = m_trees.find(root);
 			if (tree == m_trees.end())
 			{
-				ProactiveTree newTree;
+				ProactiveTree newTree = ProactiveTree(root);
 				m_trees[root] = newTree;
 			}
 			ProactiveRoute best = tree->second.GetBestRoute();
 			return LookupResult(best.retransmitter, best.interface, best.metric, best.seqnum, best.whenExpire - Simulator::Now());
+		}
+		std::vector<MgmpProtocol::FailedDestination> MgmpRtable::GetUnreachableDestinationsAll(Mac48Address huperAddress)
+		{
+			MgmpProtocol::FailedDestination dst;
+			std::vector<MgmpProtocol::FailedDestination> retval;
+			for (std::map<Mac48Address, ReactiveRoute>::iterator i = m_routes.begin(); i != m_routes.end(); i++)
+			{
+				if (i->second.retransmitter == huperAddress)
+				{
+					dst.destination = i->first;
+					i->second.seqnum++;
+					dst.seqnum = i->second.seqnum;
+					retval.push_back(dst);
+				}
+			}
+			//Lookup a path to root
+			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
+			{
+				Ptr<ProactiveRoute> check = iter->second.CheckRetransmitterExist(huperAddress);
+				if (check != nullptr)
+				{
+					dst.destination = check->root;
+					dst.seqnum = check->seqnum;
+					retval.push_back(dst);
+					break;
+				}
+			}
+			return retval;
 		}
 #endif
 	} // namespace hu11s
