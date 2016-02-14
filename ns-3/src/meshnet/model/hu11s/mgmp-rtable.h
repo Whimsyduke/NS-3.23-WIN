@@ -116,6 +116,7 @@ namespace ns3 {
 			uint8_t GetLevel();
 			void ScheduleEvent();
 			bool CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path);
+			Mac48Address GetLevelRouteRootAddress();
 			LookupResult LookupProactiveBest();
 			LookupResult LookupProactiveBestExpired();
 			LookupResult LookupProactive(Mac48Address root);
@@ -141,12 +142,10 @@ namespace ns3 {
 				std::vector<Precursor> precursors;
 			};
 			/// Route fond in proactive mode
-#ifndef HUMGMP_UNUSED_MY_CODE
-			struct ProactiveRoute : public Object
-#else
 			struct ProactiveRoute
-#endif
 			{
+			public:
+				ProactiveRoute();
 				Mac48Address root;
 				Mac48Address retransmitter;
 				uint32_t interface;
@@ -156,6 +155,7 @@ namespace ns3 {
 				std::vector<Precursor> precursors;
 #ifndef HUMGMP_UNUSED_MY_CODE
 				std::vector<Mac48Address> path;
+				bool operator== (const ProactiveRoute & o) const;
 #endif
 			};
 #ifndef HUMGMP_UNUSED_MY_CODE
@@ -169,13 +169,13 @@ namespace ns3 {
 				void DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path); 
 				bool CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path);
 				void RefreshMainRoute();
-				Ptr<ProactiveRoute> GetMiniRoute();
+				ProactiveRoute GetMiniRoute();
 				ProactiveRoute GetBestRoute();
 				void CheckExpire();
-				Ptr<ProactiveRoute> CheckRetransmitterExist(Mac48Address address);
+				ProactiveRoute CheckRetransmitterExist(Mac48Address address);
 			private:
 				std::map<std::string, ProactiveRoute> m_routes;
-				Ptr<ProactiveRoute> m_mainRoute;
+				ProactiveRoute m_mainRoute;
 				Mac48Address m_root;
 			};
 #endif
@@ -186,7 +186,7 @@ namespace ns3 {
 #ifndef HUMGMP_UNUSED_MY_CODE
 			std::map<Mac48Address, ProactiveTree>  m_trees;
 			uint8_t m_level;
-			Ptr<ProactiveRoute> m_levelRoute;
+			ProactiveRoute m_levelRoute;
 			Time m_refreshTime;
 #endif
 		};

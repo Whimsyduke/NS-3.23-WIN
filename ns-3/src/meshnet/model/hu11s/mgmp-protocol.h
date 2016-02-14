@@ -101,6 +101,9 @@ namespace ns3 {
 
 #ifndef HUMGMP_UNUSED_MY_CODE
 			std::vector<Mac48Address> GetRannReceivers(uint32_t interface);
+			bool CheckRoot();
+			Ptr<MgmpRtable> GetRtable();
+			Mac48Address GetMacAddress();
 #endif
 		private:
 			friend class MgmpProtocolMac;

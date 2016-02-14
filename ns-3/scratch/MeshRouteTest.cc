@@ -686,20 +686,19 @@ void MeshRouteClass::SetOnOffHelperApplicationRemote(Ptr<OnOffApplication> app, 
 	}
 	else if (m_ProtocolType == HU11S_MGMP)
 	{
-		Ptr<UniformRandomVariable> randIndex = CreateObject<UniformRandomVariable>();
-		randIndex->SetAttribute("Min", DoubleValue(0));
-		randIndex->SetAttribute("Max", DoubleValue(1));
-		if (randIndex->GetValue() > 0.5)
+		Ptr<hu11s::MgmpProtocol> mgmp = DynamicCast<hu11s::MgmpProtocol>(DynamicCast<MeshnetPointDevice>(l_Nodes.Get(nodeIndex)->GetDevice(0))->GetRoutingProtocol());
+		if (mgmp->CheckRoot())
 		{
-			dstIndex = nodeIndex + m_Size;
-		}
-		else
-		{
-			dstIndex = nodeIndex - m_Size;
-		}
-		if (dstIndex >= l_NodeNum)
-		{
-			dstIndex -= m_Size * 6;
+			Mac48Address root = mgmp->GetRtable()->GetLevelRouteRootAddress();
+			for (vector<int>::iterator iter = l_MPP.begin(); iter != l_MPP.end(); iter++)
+			{
+				Mac48Address address = DynamicCast<hu11s::MgmpProtocol>(DynamicCast<MeshnetPointDevice>(l_Nodes.Get(*iter)->GetDevice(0))->GetRoutingProtocol())->GetMacAddress();
+				if (root == address)
+				{
+					dstIndex = *iter;
+					break;
+				}
+			}
 		}
 	}
 	AddressValue remoteAddress(InetSocketAddress(InetSocketAddress(l_Interfaces.GetAddress(dstIndex), 49000)));

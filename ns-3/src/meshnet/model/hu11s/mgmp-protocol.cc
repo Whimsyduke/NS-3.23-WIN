@@ -405,7 +405,11 @@ namespace ns3 {
 				}
 				if (result.retransmitter != Mac48Address::GetBroadcast())
 				{
+#ifndef HUMGMP_UNUSED_MY_CODE
+					std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinationsAll(result.retransmitter);
+#else
 					std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinations(result.retransmitter);
+#endif
 					InitiatePathError(MakePathError(destinations));
 				}
 				m_stats.totalDropped++;
@@ -783,7 +787,11 @@ namespace ns3 {
 			{
 				return;
 			}
+#ifndef HUMGMP_UNUSED_MY_CODE
+			std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinationsAll(huperAddress);
+#else
 			std::vector<FailedDestination> destinations = m_rtable->GetUnreachableDestinations(huperAddress);
+#endif
 			InitiatePathError(MakePathError(destinations));
 		}
 		void
@@ -1240,6 +1248,21 @@ namespace ns3 {
 			NS_LOG_FUNCTION(this << stream);
 			m_coefficient->SetStream(stream);
 			return 1;
+		}
+
+		bool ns3::hu11s::MgmpProtocol::CheckRoot()
+		{
+			return m_isRoot;
+		}
+
+		Ptr<MgmpRtable> ns3::hu11s::MgmpProtocol::GetRtable()
+		{
+			return m_rtable;
+		}
+
+		Mac48Address ns3::hu11s::MgmpProtocol::GetMacAddress()
+		{
+			return m_address;
 		}
 
 		MgmpProtocol::QueuedPacket::QueuedPacket() :

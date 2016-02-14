@@ -43,7 +43,7 @@ namespace ns3 {
 				.AddConstructor<MgmpRtable>()
 				.AddAttribute("RefreshTime",
 					"Refresh level and main path.",
-					TimeValue(MicroSeconds(1024 * 5000)),
+					TimeValue(MicroSeconds(1024 * 2500)),
 					MakeTimeAccessor(
 						&MgmpRtable::m_refreshTime),
 					MakeTimeChecker()
@@ -54,7 +54,7 @@ namespace ns3 {
 #ifndef HUMGMP_UNUSED_MY_CODE
 			:
 				m_level(255),
-				m_refreshTime(MicroSeconds(1024 * 5000))
+				m_refreshTime(MicroSeconds(1024 * 2500))
 #endif
 		{
 			DeleteProactivePath();
@@ -262,6 +262,9 @@ namespace ns3 {
 #ifndef HUMGMP_UNUSED_MY_CODE
 		MgmpRtable::ProactiveTree::ProactiveTree()
 		{
+			m_routes["1"] = ProactiveRoute();
+			m_routes["2"] = ProactiveRoute();
+			m_routes.erase(m_routes.begin());
 		}
 		MgmpRtable::ProactiveTree::ProactiveTree(Mac48Address root)
 		{
@@ -279,10 +282,11 @@ namespace ns3 {
 			{
 				ProactiveRoute newRoute;
 				m_routes[key] = newRoute;
+				route = m_routes.find(key);
 			}
 			if (m_routes.size() == 0)
 			{
-				m_mainRoute = &(route->second);
+				m_mainRoute = route->second;
 			}
 			route->second.root = root;
 			route->second.retransmitter = retransmitter;
@@ -298,7 +302,7 @@ namespace ns3 {
 			std::map<std::string, ProactiveRoute>::iterator route = m_routes.find(key);
 			if (route != m_routes.end())
 			{
-				if (&(route->second) == m_mainRoute)
+				if (route->second == m_mainRoute)
 				{
 					m_routes.erase(route);
 					RefreshMainRoute();
@@ -317,13 +321,13 @@ namespace ns3 {
 			{
 				return false;
 			}
-			return &(route->second) == m_mainRoute;
+			return route->second == m_mainRoute;
 		}
 		void MgmpRtable::ProactiveTree::RefreshMainRoute()
 		{
 			if (m_routes.size() == 0)
 			{
-				m_mainRoute = nullptr;
+				m_mainRoute = ProactiveRoute();
 				return;
 			}
 			std::map<std::string, ProactiveRoute>::iterator main = m_routes.begin();
@@ -334,12 +338,12 @@ namespace ns3 {
 					main = iter;
 				}
 			}
-			m_mainRoute = &(main->second);
+			m_mainRoute = main->second;
 		}
-		Ptr<MgmpRtable::ProactiveRoute> MgmpRtable::ProactiveTree::GetMiniRoute()
+		MgmpRtable::ProactiveRoute MgmpRtable::ProactiveTree::GetMiniRoute()
 		{
 			std::map<std::string, ProactiveRoute>::iterator minRoute = m_routes.begin();
-			if (minRoute == m_routes.end()) return nullptr;
+			if (minRoute == m_routes.end()) return ProactiveRoute();
 			uint8_t level = minRoute->second.path.size();
 			for (std::map<std::string, ProactiveRoute>::iterator iter = m_routes.begin(); iter != m_routes.end(); iter++)
 			{
@@ -349,7 +353,7 @@ namespace ns3 {
 					minRoute = iter;
 				}
 			}
-			return &(minRoute->second);
+			return minRoute->second;
 		}
 		MgmpRtable::ProactiveRoute MgmpRtable::ProactiveTree::GetBestRoute()
 		{
@@ -391,7 +395,7 @@ namespace ns3 {
 					}
 					if (iter->second.whenExpire < Simulator::Now())
 					{
-						m_routes.erase(iter);
+						m_routes.erase(iter->first);
 						break;
 					}
 					else
@@ -401,16 +405,16 @@ namespace ns3 {
 				}
 			}
 		}
-		Ptr<MgmpRtable::ProactiveRoute> MgmpRtable::ProactiveTree::CheckRetransmitterExist(Mac48Address address)
+		MgmpRtable::ProactiveRoute MgmpRtable::ProactiveTree::CheckRetransmitterExist(Mac48Address address)
 		{
 			for (std::map<std::string, ProactiveRoute>::iterator iter = m_routes.begin(); iter != m_routes.end(); iter++)
 			{
 				if (iter->second.retransmitter == address)
 				{
-					return &(iter->second);
+					return iter->second;
 				}
 			}
-			return nullptr;
+			return ProactiveRoute();
 		}
 		void MgmpRtable::AddProactivePath(uint32_t metric, Mac48Address root, Mac48Address retransmitter, uint32_t interface, Time lifetime, uint32_t seqnum, std::vector<Mac48Address> path)
 		{
@@ -419,6 +423,7 @@ namespace ns3 {
 			{
 				ProactiveTree newTree = ProactiveTree(root);
 				m_trees[root] = newTree;
+				tree = m_trees.find(root);
 			}
 			tree->second.AddProactivePath(metric, root, retransmitter, interface, lifetime, seqnum, path);
 		}
@@ -458,9 +463,9 @@ namespace ns3 {
 			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
 			{
 				iter->second.RefreshMainRoute();
-				Ptr<ProactiveRoute> route = iter->second.GetMiniRoute();
-				if (round == nullptr) continue;
-				uint8_t level = route->path.size();
+				ProactiveRoute route = iter->second.GetMiniRoute();
+				if (route == ProactiveRoute()) continue;
+				uint8_t level = route.path.size();
 				if (level < m_level)
 				{
 					m_level = level;
@@ -487,6 +492,10 @@ namespace ns3 {
 			}
 			return tree->second.CheckMainRoute(root, path);
 		}
+		Mac48Address MgmpRtable::GetLevelRouteRootAddress()
+		{
+			return m_levelRoute.root;
+		}
 		MgmpRtable::LookupResult MgmpRtable::LookupProactiveBest()
 		{
 			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
@@ -499,7 +508,7 @@ namespace ns3 {
 		{
 			if (m_trees.size() == 0)
 			{
-				return LookupResult(Mac48Address::GetBroadcast(), INTERFACE_ANY, MAX_METRIC, 0, Simulator::Now());
+				return LookupResult();
 			}
 			ProactiveRoute best = m_trees.begin()->second.GetBestRoute();
 			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
@@ -556,17 +565,31 @@ namespace ns3 {
 			//Lookup a path to root
 			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
 			{
-				Ptr<ProactiveRoute> check = iter->second.CheckRetransmitterExist(huperAddress);
-				if (check != nullptr)
+				ProactiveRoute check = iter->second.CheckRetransmitterExist(huperAddress);
+				if (!(check == ProactiveRoute()))
 				{
-					dst.destination = check->root;
-					dst.seqnum = check->seqnum;
+					dst.destination = check.root;
+					dst.seqnum = check.seqnum;
 					retval.push_back(dst);
 					break;
 				}
 			}
 			return retval;
 		}
+		MgmpRtable::ProactiveRoute::ProactiveRoute()
+		{
+			root = Mac48Address::GetBroadcast();
+			retransmitter = Mac48Address::GetBroadcast();
+			interface = 0;
+			metric = 0;
+			whenExpire = Time(Seconds(0));
+			seqnum = 0;
+		}
+		bool MgmpRtable::ProactiveRoute::operator==(const ProactiveRoute & o) const
+		{
+			if (path.size() != o.path.size()) return false;
+			return (root == o.root && retransmitter == o.retransmitter && interface == o.interface && metric == o.metric && whenExpire == o.whenExpire && seqnum == o.seqnum && path.size() == o.path.size() && precursors.size() == o.precursors.size());
+		}
 #endif
-	} // namespace hu11s
+} // namespace hu11s
 } // namespace ns3

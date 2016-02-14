@@ -10402,7 +10402,7 @@ def register_Ns3Hu11sHuperManagementProtocol_methods(root_module, cls):
                    'std::vector< ns3::Ptr< ns3::hu11s::HuperLink > >', 
                    [], 
                    is_const=True)
-    ## huper-management-protocol.h (module 'meshnet'): std::vector<ns3::Mac48Address,std::allocator<ns3::Mac48Address> > ns3::hu11s::HuperManagementProtocol::GetHupers(uint32_t interface) const [member function]
+    ## huper-management-protocol.h (module 'meshnet'): std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > ns3::hu11s::HuperManagementProtocol::GetHupers(uint32_t interface) const [member function]
     cls.add_method('GetHupers', 
                    'std::vector< ns3::Mac48Address >', 
                    [param('uint32_t', 'interface')], 
@@ -11221,6 +11221,10 @@ def register_Ns3Hu11sIeRann_methods(root_module, cls):
     cls.add_constructor([param('ns3::hu11s::IeRann const &', 'arg0')])
     ## ie-hu11s-rann.h (module 'meshnet'): ns3::hu11s::IeRann::IeRann() [constructor]
     cls.add_constructor([])
+    ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::AddNodeOfPath(ns3::Mac48Address address) [member function]
+    cls.add_method('AddNodeOfPath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'address')])
     ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::DecrementTtl() [member function]
     cls.add_method('DecrementTtl', 
                    'void', 
@@ -11252,6 +11256,10 @@ def register_Ns3Hu11sIeRann_methods(root_module, cls):
                    'uint8_t', 
                    [], 
                    is_const=True, is_virtual=True)
+    ## ie-hu11s-rann.h (module 'meshnet'): uint8_t ns3::hu11s::IeRann::GetLevel() [member function]
+    cls.add_method('GetLevel', 
+                   'uint8_t', 
+                   [])
     ## ie-hu11s-rann.h (module 'meshnet'): uint32_t ns3::hu11s::IeRann::GetMetric() [member function]
     cls.add_method('GetMetric', 
                    'uint32_t', 
@@ -11259,6 +11267,14 @@ def register_Ns3Hu11sIeRann_methods(root_module, cls):
     ## ie-hu11s-rann.h (module 'meshnet'): ns3::Mac48Address ns3::hu11s::IeRann::GetOriginatorAddress() [member function]
     cls.add_method('GetOriginatorAddress', 
                    'ns3::Mac48Address', 
+                   [])
+    ## ie-hu11s-rann.h (module 'meshnet'): uint32_t ns3::hu11s::IeRann::GetOriginatorSeqNumber() [member function]
+    cls.add_method('GetOriginatorSeqNumber', 
+                   'uint32_t', 
+                   [])
+    ## ie-hu11s-rann.h (module 'meshnet'): std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > ns3::hu11s::IeRann::GetPath() [member function]
+    cls.add_method('GetPath', 
+                   'std::vector< ns3::Mac48Address >', 
                    [])
     ## ie-hu11s-rann.h (module 'meshnet'): uint8_t ns3::hu11s::IeRann::GetTtl() [member function]
     cls.add_method('GetTtl', 
@@ -11290,6 +11306,10 @@ def register_Ns3Hu11sIeRann_methods(root_module, cls):
     cls.add_method('SetHopcount', 
                    'void', 
                    [param('uint8_t', 'hopcount')])
+    ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::SetLevel(uint8_t originator_seq_number) [member function]
+    cls.add_method('SetLevel', 
+                   'void', 
+                   [param('uint8_t', 'originator_seq_number')])
     ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::SetMetric(uint32_t metric) [member function]
     cls.add_method('SetMetric', 
                    'void', 
@@ -11298,6 +11318,10 @@ def register_Ns3Hu11sIeRann_methods(root_module, cls):
     cls.add_method('SetOriginatorAddress', 
                    'void', 
                    [param('ns3::Mac48Address', 'originator_address')])
+    ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::SetOriginatorSeqNumber(uint32_t level) [member function]
+    cls.add_method('SetOriginatorSeqNumber', 
+                   'void', 
+                   [param('uint32_t', 'level')])
     ## ie-hu11s-rann.h (module 'meshnet'): void ns3::hu11s::IeRann::SetTTL(uint8_t ttl) [member function]
     cls.add_method('SetTTL', 
                    'void', 
@@ -11408,7 +11432,7 @@ def register_Ns3Hu11sMgmpProtocol_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
-    ## mgmp-protocol.h (module 'meshnet'): std::vector<ns3::Mac48Address,std::allocator<ns3::Mac48Address> > ns3::hu11s::MgmpProtocol::GetRannReceivers(uint32_t interface) [member function]
+    ## mgmp-protocol.h (module 'meshnet'): std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > ns3::hu11s::MgmpProtocol::GetRannReceivers(uint32_t interface) [member function]
     cls.add_method('GetRannReceivers', 
                    'std::vector< ns3::Mac48Address >', 
                    [param('uint32_t', 'interface')])
@@ -11487,16 +11511,40 @@ def register_Ns3Hu11sMgmpRtable_methods(root_module, cls):
     cls.add_method('AddProactivePath', 
                    'void', 
                    [param('uint32_t', 'metric'), param('ns3::Mac48Address', 'root'), param('ns3::Mac48Address', 'retransmitter'), param('uint32_t', 'interface'), param('ns3::Time', 'lifetime'), param('uint32_t', 'seqnum')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::AddProactivePath(uint32_t metric, ns3::Mac48Address root, ns3::Mac48Address retransmitter, uint32_t interface, ns3::Time lifetime, uint32_t seqnum, std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > path) [member function]
+    cls.add_method('AddProactivePath', 
+                   'void', 
+                   [param('uint32_t', 'metric'), param('ns3::Mac48Address', 'root'), param('ns3::Mac48Address', 'retransmitter'), param('uint32_t', 'interface'), param('ns3::Time', 'lifetime'), param('uint32_t', 'seqnum'), param('std::vector< ns3::Mac48Address >', 'path')])
     ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::AddReactivePath(ns3::Mac48Address destination, ns3::Mac48Address retransmitter, uint32_t interface, uint32_t metric, ns3::Time lifetime, uint32_t seqnum) [member function]
     cls.add_method('AddReactivePath', 
                    'void', 
                    [param('ns3::Mac48Address', 'destination'), param('ns3::Mac48Address', 'retransmitter'), param('uint32_t', 'interface'), param('uint32_t', 'metric'), param('ns3::Time', 'lifetime'), param('uint32_t', 'seqnum')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::AutoRefresh() [member function]
+    cls.add_method('AutoRefresh', 
+                   'void', 
+                   [])
+    ## mgmp-rtable.h (module 'meshnet'): bool ns3::hu11s::MgmpRtable::CheckMainRoute(ns3::Mac48Address root, std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > path) [member function]
+    cls.add_method('CheckMainRoute', 
+                   'bool', 
+                   [param('ns3::Mac48Address', 'root'), param('std::vector< ns3::Mac48Address >', 'path')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::ClearProactivePath() [member function]
+    cls.add_method('ClearProactivePath', 
+                   'void', 
+                   [])
     ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::DeleteProactivePath() [member function]
     cls.add_method('DeleteProactivePath', 
                    'void', 
                    [])
     ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::DeleteProactivePath(ns3::Mac48Address root) [member function]
     cls.add_method('DeleteProactivePath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'root')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::DeleteProactivePath(ns3::Mac48Address root, std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > path) [member function]
+    cls.add_method('DeleteProactivePath', 
+                   'void', 
+                   [param('ns3::Mac48Address', 'root'), param('std::vector< ns3::Mac48Address >', 'path')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::DeleteProactiveTree(ns3::Mac48Address root) [member function]
+    cls.add_method('DeleteProactiveTree', 
                    'void', 
                    [param('ns3::Mac48Address', 'root')])
     ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::DeleteReactivePath(ns3::Mac48Address destination) [member function]
@@ -11508,6 +11556,15 @@ def register_Ns3Hu11sMgmpRtable_methods(root_module, cls):
                    'void', 
                    [], 
                    is_virtual=True)
+    ## mgmp-rtable.h (module 'meshnet'): uint8_t ns3::hu11s::MgmpRtable::GetLevel() [member function]
+    cls.add_method('GetLevel', 
+                   'uint8_t', 
+                   [])
+    ## mgmp-rtable.h (module 'meshnet'): static std::string ns3::hu11s::MgmpRtable::GetPathString(ns3::Mac48Address root, std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > path) [member function]
+    cls.add_method('GetPathString', 
+                   'std::string', 
+                   [param('ns3::Mac48Address', 'root'), param('std::vector< ns3::Mac48Address >', 'path')], 
+                   is_static=True)
     ## mgmp-rtable.h (module 'meshnet'): std::vector<std::pair<unsigned int, ns3::Mac48Address>, std::allocator<std::pair<unsigned int, ns3::Mac48Address> > > ns3::hu11s::MgmpRtable::GetPrecursors(ns3::Mac48Address destination) [member function]
     cls.add_method('GetPrecursors', 
                    'std::vector< std::pair< unsigned int, ns3::Mac48Address > >', 
@@ -11521,14 +11578,34 @@ def register_Ns3Hu11sMgmpRtable_methods(root_module, cls):
     cls.add_method('GetUnreachableDestinations', 
                    'std::vector< ns3::hu11s::MgmpProtocol::FailedDestination >', 
                    [param('ns3::Mac48Address', 'huperAddress')])
+    ## mgmp-rtable.h (module 'meshnet'): std::vector<ns3::hu11s::MgmpProtocol::FailedDestination, std::allocator<ns3::hu11s::MgmpProtocol::FailedDestination> > ns3::hu11s::MgmpRtable::GetUnreachableDestinationsAll(ns3::Mac48Address huperAddress) [member function]
+    cls.add_method('GetUnreachableDestinationsAll', 
+                   'std::vector< ns3::hu11s::MgmpProtocol::FailedDestination >', 
+                   [param('ns3::Mac48Address', 'huperAddress')])
     ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactive() [member function]
     cls.add_method('LookupProactive', 
+                   'ns3::hu11s::MgmpRtable::LookupResult', 
+                   [])
+    ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactive(ns3::Mac48Address root) [member function]
+    cls.add_method('LookupProactive', 
+                   'ns3::hu11s::MgmpRtable::LookupResult', 
+                   [param('ns3::Mac48Address', 'root')])
+    ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactiveBest() [member function]
+    cls.add_method('LookupProactiveBest', 
+                   'ns3::hu11s::MgmpRtable::LookupResult', 
+                   [])
+    ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactiveBestExpired() [member function]
+    cls.add_method('LookupProactiveBestExpired', 
                    'ns3::hu11s::MgmpRtable::LookupResult', 
                    [])
     ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactiveExpired() [member function]
     cls.add_method('LookupProactiveExpired', 
                    'ns3::hu11s::MgmpRtable::LookupResult', 
                    [])
+    ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupProactiveExpired(ns3::Mac48Address root) [member function]
+    cls.add_method('LookupProactiveExpired', 
+                   'ns3::hu11s::MgmpRtable::LookupResult', 
+                   [param('ns3::Mac48Address', 'root')])
     ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::LookupResult ns3::hu11s::MgmpRtable::LookupReactive(ns3::Mac48Address destination) [member function]
     cls.add_method('LookupReactive', 
                    'ns3::hu11s::MgmpRtable::LookupResult', 
@@ -11537,6 +11614,10 @@ def register_Ns3Hu11sMgmpRtable_methods(root_module, cls):
     cls.add_method('LookupReactiveExpired', 
                    'ns3::hu11s::MgmpRtable::LookupResult', 
                    [param('ns3::Mac48Address', 'destination')])
+    ## mgmp-rtable.h (module 'meshnet'): void ns3::hu11s::MgmpRtable::ScheduleEvent() [member function]
+    cls.add_method('ScheduleEvent', 
+                   'void', 
+                   [])
     ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::INTERFACE_ANY [variable]
     cls.add_static_attribute('INTERFACE_ANY', 'uint32_t const', is_const=True)
     ## mgmp-rtable.h (module 'meshnet'): ns3::hu11s::MgmpRtable::MAX_METRIC [variable]
