@@ -701,6 +701,10 @@ void MeshRouteClass::SetOnOffHelperApplicationRemote(Ptr<OnOffApplication> app, 
 			}
 		}
 	}
+	else
+	{
+		dstIndex = l_MPP[0];
+	}
 	AddressValue remoteAddress(InetSocketAddress(InetSocketAddress(l_Interfaces.GetAddress(dstIndex), 49000)));
 	app->SetAttribute("Remote", remoteAddress);
 }
@@ -921,17 +925,27 @@ void MeshRouteClass::InstallApplicationRandom()
 						if (n % 2 == 0)
 						{
 							InstallOnOffHelperApplication(s + i, n, m_TotalTime);
-							InstallPacketSinkHelperApplication(s + r * 3 + i, 49000 + n, n, m_TotalTime);
+							if (m_ProtocolType != DOT11S_HWMP)
+							{
+								InstallPacketSinkHelperApplication(s + r * 3 + i, 49000 + n, n, m_TotalTime);
+							}
 						}
 						else
 						{
 							InstallOnOffHelperApplication(s + r * 3 + i, n, m_TotalTime);
-							InstallPacketSinkHelperApplication(s + i, 49000 + n, n, m_TotalTime);
+							if (m_ProtocolType != DOT11S_HWMP)
+							{
+								InstallPacketSinkHelperApplication(s + i, 49000 + n, n, m_TotalTime);
+							}
 						}
 						n++;
 					}
 				}
 			}
+		}
+		if (m_ProtocolType == DOT11S_HWMP)
+		{
+			InstallPacketSinkHelperApplication(0, 49001, 1, m_TotalTime);
 		}
 		break;
 		default:
@@ -968,6 +982,9 @@ void MeshRouteClass::FlowMonitorReport()
 		break;
 	case MeshRouteClass::MY11S_PMTMGMP:
 		typeName = "MY11S_PMTMGMP";
+		break;
+	case MeshRouteClass::HU11S_MGMP:
+		typeName = "HU11S_MGMP";
 		break;
 	default:
 		break;
@@ -1241,9 +1258,6 @@ int main(int argc, char *argv[])
 #else
 #endif
 #endif
-
-	LogComponentEnable("MgmpProtocol", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
-
 #ifndef TEST_MULTIGATE
 #ifndef TEST_SIDE_ALL
 	//LogComponentEnableAll((LogLevel)(LOG_LEVEL_INFO | LOG_PREFIX_ALL));
@@ -1567,19 +1581,30 @@ int main(int argc, char *argv[])
 		test.Run();
 #endif
 	}
-#else		
-	NS_LOG_INFO("=============================");
-	NS_LOG_INFO("PROTOCOL :HU11S   SIZE :" << TEST_SET_SIZE);
-	NS_LOG_INFO("=============================\n");
-	MeshRouteClass mesh;
-	mesh.SetMeshRouteClass(MeshRouteClass::HU11S_MGMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
-	mesh.Run();
+	#else		
+	LogComponentEnable("MeshRouteTest", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
+	/*LogComponentEnable("MgmpProtocol", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
+	LogComponentEnable("MgmpProtocolMac", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
+	LogComponentEnable("PmtmgmpProtocol", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
+	LogComponentEnable("PmtmgmpProtocolMac", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));*/
 	NS_LOG_INFO("=============================");
 	NS_LOG_INFO("PROTOCOL :MY11S_PMTMGMP   SIZE :" << TEST_SET_SIZE);
 	NS_LOG_INFO("=============================\n");
 	MeshRouteClass pmtmgmp;
 	pmtmgmp.SetMeshRouteClass(MeshRouteClass::MY11S_PMTMGMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
 	pmtmgmp.Run();
+	NS_LOG_INFO("=============================");
+	NS_LOG_INFO("PROTOCOL :HU11S   SIZE :" << TEST_SET_SIZE);
+	NS_LOG_INFO("=============================\n");
+	MeshRouteClass meshnet;
+	meshnet.SetMeshRouteClass(MeshRouteClass::HU11S_MGMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
+	meshnet.Run();
+	NS_LOG_INFO("=============================");
+	NS_LOG_INFO("PROTOCOL :DOT11s   SIZE :" << TEST_SET_SIZE);
+	NS_LOG_INFO("=============================\n");
+	MeshRouteClass mesh;
+	mesh.SetMeshRouteClass(MeshRouteClass::DOT11S_HWMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
+	mesh.Run();
 #endif						
 	return 0;
 }

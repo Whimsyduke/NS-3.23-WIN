@@ -11427,15 +11427,27 @@ def register_Ns3Hu11sMgmpProtocol_methods(root_module, cls):
     cls.add_method('AssignStreams', 
                    'int64_t', 
                    [param('int64_t', 'stream')])
+    ## mgmp-protocol.h (module 'meshnet'): bool ns3::hu11s::MgmpProtocol::CheckRoot() [member function]
+    cls.add_method('CheckRoot', 
+                   'bool', 
+                   [])
     ## mgmp-protocol.h (module 'meshnet'): void ns3::hu11s::MgmpProtocol::DoDispose() [member function]
     cls.add_method('DoDispose', 
                    'void', 
                    [], 
                    is_virtual=True)
+    ## mgmp-protocol.h (module 'meshnet'): ns3::Mac48Address ns3::hu11s::MgmpProtocol::GetMacAddress() [member function]
+    cls.add_method('GetMacAddress', 
+                   'ns3::Mac48Address', 
+                   [])
     ## mgmp-protocol.h (module 'meshnet'): std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > ns3::hu11s::MgmpProtocol::GetRannReceivers(uint32_t interface) [member function]
     cls.add_method('GetRannReceivers', 
                    'std::vector< ns3::Mac48Address >', 
                    [param('uint32_t', 'interface')])
+    ## mgmp-protocol.h (module 'meshnet'): ns3::Ptr<ns3::hu11s::MgmpRtable> ns3::hu11s::MgmpProtocol::GetRtable() [member function]
+    cls.add_method('GetRtable', 
+                   'ns3::Ptr< ns3::hu11s::MgmpRtable >', 
+                   [])
     ## mgmp-protocol.h (module 'meshnet'): static ns3::TypeId ns3::hu11s::MgmpProtocol::GetTypeId() [member function]
     cls.add_method('GetTypeId', 
                    'ns3::TypeId', 
@@ -11559,6 +11571,10 @@ def register_Ns3Hu11sMgmpRtable_methods(root_module, cls):
     ## mgmp-rtable.h (module 'meshnet'): uint8_t ns3::hu11s::MgmpRtable::GetLevel() [member function]
     cls.add_method('GetLevel', 
                    'uint8_t', 
+                   [])
+    ## mgmp-rtable.h (module 'meshnet'): ns3::Mac48Address ns3::hu11s::MgmpRtable::GetLevelRouteRootAddress() [member function]
+    cls.add_method('GetLevelRouteRootAddress', 
+                   'ns3::Mac48Address', 
                    [])
     ## mgmp-rtable.h (module 'meshnet'): static std::string ns3::hu11s::MgmpRtable::GetPathString(ns3::Mac48Address root, std::vector<ns3::Mac48Address, std::allocator<ns3::Mac48Address> > path) [member function]
     cls.add_method('GetPathString', 
