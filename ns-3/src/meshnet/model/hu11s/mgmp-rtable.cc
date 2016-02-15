@@ -321,6 +321,10 @@ namespace ns3 {
 			{
 				return false;
 			}
+			if (m_mainRoute == ProactiveRoute())
+			{
+				RefreshMainRoute();
+			}
 			return route->second == m_mainRoute;
 		}
 		void MgmpRtable::ProactiveTree::RefreshMainRoute()
@@ -481,19 +485,23 @@ namespace ns3 {
 		void MgmpRtable::ScheduleEvent()
 		{
 			AutoRefresh();
-			Simulator::Schedule(Seconds(m_refreshTime), &MgmpRtable::ScheduleEvent, this);
+			Simulator::Schedule(m_refreshTime, &MgmpRtable::ScheduleEvent, this);
 		}
 		bool MgmpRtable::CheckMainRoute(Mac48Address root, std::vector<Mac48Address> path)
 		{
 			std::map<Mac48Address, ProactiveTree>::iterator tree = m_trees.find(root);
 			if (tree == m_trees.end())
 			{
-				return false;
+				return true;
 			}
 			return tree->second.CheckMainRoute(root, path);
 		}
 		Mac48Address MgmpRtable::GetLevelRouteRootAddress()
 		{
+			if (m_levelRoute == ProactiveRoute())
+			{
+				AutoRefresh();
+			}
 			return m_levelRoute.root;
 		}
 		MgmpRtable::LookupResult MgmpRtable::LookupProactiveBest()
