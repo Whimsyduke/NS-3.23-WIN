@@ -43,7 +43,7 @@ namespace ns3 {
 				.AddConstructor<MgmpRtable>()
 				.AddAttribute("RefreshTime",
 					"Refresh level and main path.",
-					TimeValue(MicroSeconds(1024 * 2500)),
+					TimeValue(MicroSeconds(1024 * 4000)),
 					MakeTimeAccessor(
 						&MgmpRtable::m_refreshTime),
 					MakeTimeChecker()
@@ -54,7 +54,7 @@ namespace ns3 {
 #ifndef HUMGMP_UNUSED_MY_CODE
 			:
 				m_level(255),
-				m_refreshTime(MicroSeconds(1024 * 2500))
+				m_refreshTime(MicroSeconds(1024 * 4000))
 #endif
 		{
 			DeleteProactivePath();
@@ -295,6 +295,10 @@ namespace ns3 {
 			route->second.seqnum = seqnum;
 			route->second.interface = interface;
 			route->second.path = path;
+			if (m_mainRoute == route->second)
+			{
+				m_mainRoute = route->second;
+			}
 		}
 		void MgmpRtable::ProactiveTree::DeleteProactivePath(Mac48Address root, std::vector<Mac48Address> path)
 		{
@@ -480,6 +484,18 @@ namespace ns3 {
 		}
 		uint8_t MgmpRtable::GetLevel()
 		{
+			m_level = 255;
+			for (std::map<Mac48Address, ProactiveTree>::iterator iter = m_trees.begin(); iter != m_trees.end(); iter++)
+			{
+				ProactiveRoute route = iter->second.GetMiniRoute();
+				if (route == ProactiveRoute()) continue;
+				uint8_t level = route.path.size();
+				if (level < m_level)
+				{
+					m_level = level;
+					m_levelRoute = route;
+				}
+			}
 			return m_level;
 		}
 		void MgmpRtable::ScheduleEvent()
@@ -596,7 +612,7 @@ namespace ns3 {
 		bool MgmpRtable::ProactiveRoute::operator==(const ProactiveRoute & o) const
 		{
 			if (path.size() != o.path.size()) return false;
-			return (root == o.root && retransmitter == o.retransmitter && interface == o.interface && metric == o.metric && whenExpire == o.whenExpire && seqnum == o.seqnum && path.size() == o.path.size() && precursors.size() == o.precursors.size());
+			return (root == o.root && retransmitter == o.retransmitter && interface == o.interface && metric == o.metric && whenExpire == o.whenExpire && seqnum == o.seqnum);
 		}
 #endif
 } // namespace hu11s

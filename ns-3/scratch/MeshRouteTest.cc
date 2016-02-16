@@ -47,9 +47,9 @@
 #endif
 
 // 仿真前路由生成时间
-#define MIN_APPLICATION_TIME 12
+#define MIN_APPLICATION_TIME 10
 // 仿真后等待时间
-#define END_APPLICATION_TIME 20
+#define END_APPLICATION_TIME 10
 
 // 随机应用总数
 #define TEST_SET_COUNT 5
@@ -432,7 +432,7 @@ void MeshRouteClass::SimulatorSetting()
 		string l_AttributePath_PeerLink;// Peer Link
 		string l_AttributePath_PeerManagementProtocol;// Peer Management Protocol
 		string l_AttributePath_RouteProtocol;// Route Protocol
-												 //路由协议类型
+											 //路由协议类型
 		switch (m_ProtocolType)
 		{
 		case MeshRouteClass::DOT11S_HWMP:
@@ -1582,7 +1582,7 @@ int main(int argc, char *argv[])
 		test.Run();
 #endif
 	}
-	#else		
+#else
 	LogComponentEnable("MeshRouteTest", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
 	//LogComponentEnable("MgmpProtocol", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
 	//LogComponentEnable("MgmpProtocolMac", (LogLevel)(LOG_LEVEL_ALL | LOG_PREFIX_ALL));
@@ -1608,6 +1608,6 @@ int main(int argc, char *argv[])
 	MeshRouteClass mesh;
 	mesh.SetMeshRouteClass(MeshRouteClass::DOT11S_HWMP, TEST_SET_AREA, TEST_SET_SIZE, TEST_SET_APPSTEP, TEST_SET_APP);
 	mesh.Run();
-#endif						
+#endif
 	return 0;
 }

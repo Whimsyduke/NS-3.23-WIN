@@ -1350,7 +1350,7 @@ namespace ns3 {
 			if (m_rtable->CheckMainRoute(rann.GetOriginatorAddress(), path))
 			{
 				NS_LOG_DEBUG("Transmit Rann at " << m_address << " rann" << rann);
-				rann.GetPath().push_back(m_address);
+				rann.AddNodeOfPath(m_address);
 				SendRann(rann);
 			}			
 		}
