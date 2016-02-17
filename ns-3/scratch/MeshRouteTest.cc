@@ -47,7 +47,7 @@
 #endif
 
 // 仿真前路由生成时间
-#define MIN_APPLICATION_TIME 10
+#define MIN_APPLICATION_TIME 14
 // 仿真后等待时间
 #define END_APPLICATION_TIME 10
 
